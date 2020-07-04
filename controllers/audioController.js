@@ -15,7 +15,7 @@ exports.getAudio = (req, res, next) => {
   });
 
   let input = {
-    Text: "This is a new day",
+    Text: "Hi",
     OutputFormat: "mp3",
     VoiceId: "Matthew",
   };
@@ -23,28 +23,18 @@ exports.getAudio = (req, res, next) => {
   Polly.synthesizeSpeech(input, (err, data) => {
     if (err) {
       console.log(err.code);
+      return res.status(401).json({
+        status: "failed",
+        err,
+      });
     } else if (data) {
       if (data.AudioStream instanceof Buffer) {
-        fs.writeFile("./audio.mp3", data.AudioStream, (error) => {
-          if (error) {
-            return console.log(error);
-          }
-          console.log("file saved");
-        });
-
-        let bufferStream = new Stream.PassThrough();
-
-        bufferStream.end(data.AudioStream);
-
-        bufferStream.pipe(Player);
+        res.write(data.AudioStream);
+        // let bufferStream = new Stream.PassThrough();
+        // bufferStream.end(data.AudioStream);
+        // bufferStream.pipe(Player);
+        res.end();
       }
-    }
-  });
-  res.status(200).download("./audio.mp3", (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("downloaded");
     }
   });
 };
