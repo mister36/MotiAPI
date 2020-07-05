@@ -8,16 +8,14 @@ exports.getAudio = (req, res, next) => {
     region: "us-east-2",
   });
 
-  const Player = new Speaker({
-    channels: 1,
-    bitdepth: 16,
-    sampleRate: 16000,
-  });
+  //   for (let i = 1; i < 4)
+  const text = req.text[Math.floor(Math.random() * 5)];
 
   let input = {
-    Text: "Hi",
+    Text: text,
     OutputFormat: "mp3",
     VoiceId: "Matthew",
+    TextType: "ssml",
   };
 
   Polly.synthesizeSpeech(input, (err, data) => {
