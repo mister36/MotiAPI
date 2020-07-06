@@ -1,38 +1,27 @@
-const AWS = require("aws-sdk");
-const Stream = require("stream");
-const Speaker = require("speaker");
-const fs = require("fs");
+const textToSpeech = require("@google-cloud/text-to-speech");
 
-exports.getAudio = (req, res, next) => {
-  const Polly = new AWS.Polly({
-    region: "us-east-2",
-  });
+exports.getAudio = async (req, res, next) => {
+  const client = new textToSpeech.TextToSpeechClient();
 
-  //   for (let i = 1; i < 4)
-  const text = req.text[Math.floor(Math.random() * 5)];
+  const text = "Adam, your the best!";
 
-  let input = {
-    Text: text,
-    OutputFormat: "mp3",
-    VoiceId: "Matthew",
-    TextType: "ssml",
+  const request = {
+    input: { text },
+    voice: { languageCode: "en-US", ssmlGender: "FEMALE" },
+    audioConfig: { audioEncoding: "LINEAR16" },
   };
 
-  Polly.synthesizeSpeech(input, (err, data) => {
-    if (err) {
-      console.log(err.code);
-      return res.status(401).json({
-        status: "failed",
-        err,
-      });
-    } else if (data) {
-      if (data.AudioStream instanceof Buffer) {
-        res.write(data.AudioStream);
-        // let bufferStream = new Stream.PassThrough();
-        // bufferStream.end(data.AudioStream);
-        // bufferStream.pipe(Player);
-        res.end();
-      }
-    }
-  });
+  try {
+    const [response] = await client.synthesizeSpeech(request);
+
+    res.write(response.audioContent);
+
+    res.end();
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: "error",
+      message: error,
+    });
+  }
 };

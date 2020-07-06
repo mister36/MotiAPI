@@ -2,7 +2,7 @@
 
 exports.start = (name) => {
   return [
-    `<speak>${name}, I hope you're ready</speak>`,
+    `<speak>${name}, let's get started</speak>`,
     `<speak>You're on the way to greatness, ${name}</speak>`,
   ];
 };
@@ -12,7 +12,6 @@ exports.regular = (name) => {
     "<speak>you can do this</speak>",
     "<speak>Stick with this, and the results will come</speak>",
     `<speak>Are you going to get better today, ${name}?</speak>`,
-    `<speak>You are not forced</speak>`,
   ];
 };
 
