@@ -1,8 +1,10 @@
 // Imports
+const fs = require("fs");
 const socketio = require("socket.io");
 const dotenv = require("dotenv");
-const fs = require("fs");
 const base64 = require("byte-base64");
+const textToSpeech = require("@google-cloud/text-to-speech");
+const wav = require("wav");
 
 dotenv.config({ path: `${__dirname}/config.env` });
 const port = process.env.PORT;
@@ -17,36 +19,31 @@ const expressServer = app.listen(port, () =>
 // Start socket.io server
 const io = socketio(expressServer);
 
-let file;
+const askGoogle = async (request) => {
+  const client = new textToSpeech.TextToSpeechClient();
+  try {
+    const [response1] = await client.synthesizeSpeech(request);
 
-fs.readFile(`${__dirname}/music/example.mp3`, (err, data) => {
-  if (err) console.log(err);
-  file = data;
-});
-
-// const stream = ss.createStream()
+    return response1;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 io.of("/audio").on("connect", (socket) => {
   console.log("connected");
 
-  socket.on("sendAudio", (info) => {
+  socket.on("sendGoogleVoice", async (info) => {
     console.log("got request");
-    const stream = fs.createReadStream(`${__dirname}/music/example.mp3`);
 
-    stream.on("data", (chunk) => {
-      console.log(typeof chunk, chunk.length);
-      socket.emit("receiveAudio", base64.bytesToBase64(new Uint8Array(chunk)));
-    });
+    const request = {
+      input: { text: "I believe in you, I hope you know that" },
+      voice: { languageCode: "en-US", ssmlGender: "FEMALE" },
+      audioConfig: { audioEncoding: "LINEAR16", sampleRateHertz: 16000 },
+    };
 
-    stream.on("end", () => console.log("ENDED"));
+    const response = await askGoogle(request);
 
-    // const stream2 = fs.createReadStream(`${__dirname}/music/workout1.mp3`);
-
-    // stream2.on("data", (chunk) => {
-    //   socket.emit("receiveAudio", base64.bytesToBase64(new Uint8Array(chunk)));
-    // });
-
-    // stream2.on("end", () => console.log("ENDED2"));
-    // socket.emit("audioStream", file);
+    socket.emit("receiveAudio", base64.bytesToBase64(response.audioContent));
   });
 });

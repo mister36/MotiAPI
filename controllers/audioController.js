@@ -1,27 +1,61 @@
-const textToSpeech = require("@google-cloud/text-to-speech");
+const fs = require("fs");
+const { promisify } = require("util");
+const _ = require("lodash");
+// const MP3Cutter = require("@mister36/mp3-cutter");
 
-exports.getAudio = async (req, res, next) => {
-  const client = new textToSpeech.TextToSpeechClient();
+exports.getBackgroundAudio = async (req, res, next) => {
+  const genre = req.query.genre;
+  const duration = req.query.duration;
 
-  const text = "Adam, your the best!";
+  const randomSongNum = _.random(1, 2, false);
 
-  const request = {
-    input: { text },
-    voice: { languageCode: "en-US", ssmlGender: "FEMALE" },
-    audioConfig: { audioEncoding: "LINEAR16" },
-  };
+  const background = fs.createReadStream(
+    `${__dirname}/../music/${genre}${randomSongNum}.mp3`
+  );
 
-  try {
-    const [response] = await client.synthesizeSpeech(request);
+  background.on("data", (chunk) => {
+    res.write(chunk);
+  });
 
-    res.write(response.audioContent);
-
+  background.on("error", (err) => {
+    console.log(err);
     res.end();
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      status: "error",
-      message: error,
-    });
-  }
+  });
+
+  background.on("end", () => {
+    res.end();
+    console.log("Background music loaded");
+  });
 };
+
+// exports.getMJ = async (req, res, next) => {
+//   const file = fs.createReadStream(`${__dirname}/../music/billiejean.mp3`, {
+//     start: 0,
+//     end: 100000,
+//   });
+
+//   file.on("data", (chunk) => {
+//     res.write(chunk);
+//   });
+
+//   file.on("end", (chunk) => {
+//     res.end();
+//   });
+
+//   file.on("error", (err) => {
+//     console.error(err);
+//   });
+// };
+
+// exports.specDuration = async (req, res, next) => {
+//   try {
+//     await promisify(MP3Cutter.cut)({
+//       src: `${__dirname}/../music/billiejean.mp3`,
+//       start: 0,
+//       responseObj: res,
+//       end: 15,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };

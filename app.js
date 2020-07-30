@@ -11,8 +11,6 @@ const app = express();
 // !Middleware
 process.env.NODE_ENV === "development" ? app.use(morgan("dev")) : null;
 
-// console.log(process.env);
-
 // Allows fetching of data from req.body
 app.use(express.json());
 
