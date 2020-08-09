@@ -12,7 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/text-to-speech": "^3.0.1",
-    "@mister36/mp3-cutter": "git+https://github.com/mister36/mp3-cutter.git",
     "audio-mixer": "^2.1.4",
     "byte-base64": "^1.0.2",
     "cors": "^2.8.5",

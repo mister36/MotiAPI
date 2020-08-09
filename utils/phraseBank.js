@@ -1,30 +1,25 @@
 // Phrase bank for different situations
 
-exports.start = (name) => {
+exports.startingVoice = (name) => {
   return [
-    `<speak>${name}, let's get started</speak>`,
-    `<speak>You're on the way to greatness, ${name}</speak>`,
+    `<speak><prosody pitch="-3st">${name}, let's start</prosody>
+  </speak>`,
+    `<speak>
+    <prosody pitch="-3st">${name}, are you ready?</prosody>
+</speak>`,
   ];
 };
 
-exports.regular = (name) => {
+exports.sessionVoice = (name) => {
   return [
-    "<speak>you can do this</speak>",
-    "<speak>Stick with this, and the results will come</speak>",
-    `<speak>Are you going to get better today, ${name}?</speak>`,
-  ];
-};
-
-exports.intense = (name) => {
-  return [
-    `<speak>Think about why you're doing this ${name}. What brought you here? What are you fighting for! Think!</speak>`,
-  ];
-};
-
-exports.workout = (name) => {
-  return [
-    `<speak>${name}, will you get stronger today? Faster? Better?</speak>`,
-    `<speak>Are you still feeling energetic?</speak>`,
-    `<speak>You don't exercise because you have to, ${name}. It is because you choose to, and that's why you will succeed!</speak>`,
+    `<speak>
+    <prosody pitch="-1st"><emphasis level="strong">${name}, What is it that you desire?</emphasis></prosody>
+  </speak>`,
+    `<speak>
+    <prosody pitch="-1st"><emphasis level="strong">How much better will you get today?</emphasis></prosody>
+  </speak>`,
+    `<speak>
+  <prosody pitch="-1st" rate="110%">Now is not the time to quit. <break strength="medium" /> Don't lose that energy</prosody>
+</speak>`,
   ];
 };

@@ -39,11 +39,11 @@ io.of("/audio").on("connect", (socket) => {
     const request = {
       input: { text: "I believe in you, I hope you know that" },
       voice: { languageCode: "en-US", ssmlGender: "FEMALE" },
-      audioConfig: { audioEncoding: "LINEAR16", sampleRateHertz: 16000 },
+      audioConfig: { audioEncoding: "MP3" },
     };
 
     const response = await askGoogle(request);
 
-    socket.emit("receiveAudio", base64.bytesToBase64(response.audioContent));
+    socket.emit("receiveAudio", response.audioContent);
   });
 });

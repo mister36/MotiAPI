@@ -1,16 +1,36 @@
 const fs = require("fs");
+const Stream = require("stream");
 const { promisify } = require("util");
 const _ = require("lodash");
-// const MP3Cutter = require("@mister36/mp3-cutter");
+const textToSpeech = require("@google-cloud/text-to-speech");
+const { startingVoice, sessionVoice } = require("../utils/phraseBank");
+
+const durationToBytes = (duration = 60, bitrate = 320) => {
+  // Converts duration of song to size in bytes
+  // Duration in seconds, bitrate in kbps
+  return ((duration * bitrate) / 8) * 1024;
+};
+
+const googleResponse = async (request) => {
+  const client = new textToSpeech.TextToSpeechClient();
+  try {
+    const [response] = await client.synthesizeSpeech(request);
+
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 exports.getBackgroundAudio = async (req, res, next) => {
-  const genre = req.query.genre;
-  const duration = req.query.duration;
+  // let { duration } = req.query;
+  // if (!duration || duration < 0 || duration > 300) duration = 150;
 
-  const randomSongNum = _.random(1, 2, false);
+  const randomSongNum = _.random(1, 6, false);
 
   const background = fs.createReadStream(
-    `${__dirname}/../music/${genre}${randomSongNum}.mp3`
+    `${__dirname}/../music/song${randomSongNum}.mp3`
+    // { start: 0, end: durationToBytes(duration) }
   );
 
   background.on("data", (chunk) => {
@@ -28,34 +48,40 @@ exports.getBackgroundAudio = async (req, res, next) => {
   });
 };
 
-// exports.getMJ = async (req, res, next) => {
-//   const file = fs.createReadStream(`${__dirname}/../music/billiejean.mp3`, {
-//     start: 0,
-//     end: 100000,
-//   });
+exports.getGoogleVoice = async (req, res, next) => {
+  let ssmlArr;
+  const { name, firstVoice } = req.query;
 
-//   file.on("data", (chunk) => {
-//     res.write(chunk);
-//   });
+  if (firstVoice) {
+    ssmlArr = startingVoice(name);
+  } else {
+    ssmlArr = sessionVoice(name);
+  }
+  // Random statement
+  const ssml = ssmlArr[_.random(0, ssmlArr.length - 1, false)];
 
-//   file.on("end", (chunk) => {
-//     res.end();
-//   });
+  const request = {
+    input: {
+      ssml,
+    },
+    voice: {
+      languageCode: "en-US",
+      name: "en-US-Wavenet-D",
+      ssmlGender: "MALE",
+    },
+    audioConfig: { audioEncoding: "OGG_OPUS" },
+  };
 
-//   file.on("error", (err) => {
-//     console.error(err);
-//   });
-// };
+  try {
+    const response = await googleResponse(request);
 
-// exports.specDuration = async (req, res, next) => {
-//   try {
-//     await promisify(MP3Cutter.cut)({
-//       src: `${__dirname}/../music/billiejean.mp3`,
-//       start: 0,
-//       responseObj: res,
-//       end: 15,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+    const readableStream = new Stream.Readable();
+    readableStream.push(response.audioContent);
+    readableStream.push(null);
+
+    readableStream.pipe(res);
+    console.log("voice loaded");
+  } catch (error) {
+    console.error(error);
+  }
+};
