@@ -14,6 +14,11 @@ process.env.NODE_ENV === "development" ? app.use(morgan("dev")) : null;
 // Allows fetching of data from req.body
 app.use(express.json());
 
+// app.all("*", (req, res, next) => {
+//   // console.log(req.httpVersion);
+//   res.end(req.stream.session);
+// });
+
 // !Use routes
 app.use("/api/v1/audio", audioRouter);
 
