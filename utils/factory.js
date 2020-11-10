@@ -2,7 +2,7 @@ const fs = require("fs");
 const stream = require("stream");
 const { promisify } = require("util");
 
-exports.streaming = async (req, res, path, contentType) => {
+exports.streaming = async (req, res, path, contentType, chunk = false) => {
   try {
     const stat = await promisify(fs.stat)(path);
     const fileSize = stat.size;

@@ -1,6 +1,7 @@
 // Import packages
 const express = require("express");
 const morgan = require("morgan");
+const helmet = require("helmet");
 
 // TODO : Remove this
 const NotificationService = require("./pushNotifications");
@@ -16,6 +17,8 @@ process.env.NODE_ENV === "development" ? app.use(morgan("dev")) : null;
 
 // Allows fetching of data from req.body
 app.use(express.json());
+// Sets security headers
+app.use(helmet());
 
 // app.all("*", (req, res, next) => {
 //   // console.log(req.httpVersion);

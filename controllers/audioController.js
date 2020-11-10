@@ -5,7 +5,12 @@ const _ = require("lodash");
 
 // const es = require("event-stream");
 const textToSpeech = require("@google-cloud/text-to-speech");
-const { startingVoice, sessionVoice } = require("../utils/phraseBank");
+const {
+  startingVoice,
+  sessionVoice,
+  heroBank,
+  riseBank,
+} = require("../utils/phraseBank");
 const { streaming, streamingVoice } = require("../utils/factory");
 
 const durationToBytes = (duration = 60, bitrate = 320) => {
@@ -26,51 +31,85 @@ const googleResponse = async (request) => {
 };
 
 exports.getBackgroundAudio = async (req, res, next) => {
-  let path;
-  let mime;
+  let { name } = req.query;
+  // let path;
+  // let mime;
 
-  // Music files sorted by file extensions
-  const webmArr = [2, 3, 4];
-  const m4aArr = [1];
+  // const randomSongNum = _.random(1, 4, false);
 
-  const randomSongNum = _.random(1, 4, false);
+  // path = `${__dirname}/../music/${genre}${randomSongNum}.opus`
+  // path = `${__dirname}/../music/hero4.opus`
+  mime = "audio/opus";
 
-  if (webmArr.includes(randomSongNum)) {
-    path = `${__dirname}/../music/song${randomSongNum}.webm`;
-    mime = "video/webm";
-  } else if (m4aArr.includes(randomSongNum)) {
-    path = `${__dirname}/../music/song${randomSongNum}.m4a`;
-    mime = "audio/mp4";
-  }
-
-  // stream.on("error", () => console.log("stream error"));
-  // stream.end();
-  // res.end();
-
-  // const stream = fs.createReadStream(path);
-  // res.setHeader("Content-Type", mime);
-  // stream.pipe(res);
+  const path = `${__dirname}/../music/${name}.opus`;
 
   try {
     await streaming(req, res, path, mime);
+    // fs.createReadStream(path).pipe(res);
+    console.log("SENT OGG SUCCESSFULLY");
   } catch (error) {
     console.error(error);
   }
 };
 
+// exports.testMP3 = async (req, res, next) => {
+//   const ssml = `<speak>
+//     <prosody pitch="-1st">No power is out of your reach,<break time="400ms"/> <prosody pitch="-2st"> but you must work for it</prosody></prosody>
+//     </speak>`;
+
+//   const request = {
+//     input: {
+//       ssml,
+//     },
+//     voice: {
+//       languageCode: "en-US",
+//       name: "en-US-Wavenet-D",
+//     },
+//     audioConfig: {
+//       // audioEncoding: "MP3",
+//       audioEncoding: "OGG_OPUS",
+//       effectsProfileId: ["large-automotive-class-device"],
+//       // sampleRateHertz: 96000,
+//       volumeGainDb: 8,
+//       pitch: -2.5,
+//     },
+//   };
+
+//   try {
+//     const response = await googleResponse(request);
+
+//     // console.log(response.audioContent.toString());
+//     // const binaryResponse = base64.base64ToBytes(response.audioContent);
+
+//     const readableStream = new Stream.Readable();
+
+//     // readableStream.push(binaryResponse);
+//     readableStream.push(response.audioContent);
+//     readableStream.push(null);
+//     readableStream.pipe(res);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
 exports.getGoogleVoice = async (req, res, next) => {
   let ssmlArr;
-  const { name, firstVoice } = req.query;
+  const { firstName, firstVoice, genre } = req.query;
 
   if (firstVoice) {
-    ssmlArr = startingVoice(name);
-  } else {
-    ssmlArr = sessionVoice(name);
+    ssmlArr = startingVoice(firstName);
+  } else if (genre === "hero") {
+    ssmlArr = heroBank(firstName);
+  } else if (genre === "rise") {
+    ssmlArr = riseBank(firstName);
   }
   // Random statement
   const ssml = ssmlArr[_.random(0, ssmlArr.length - 1, false)];
+  //   const ssml = `<speak>
+  //   <prosody rate=\"120%\">Welcome Adam. Let's not waste any time</prosody>
+  // </speak>`;
 
-  // console.log(ssml);
+  console.log(ssml);
 
   const request = {
     input: {
@@ -79,28 +118,39 @@ exports.getGoogleVoice = async (req, res, next) => {
     voice: {
       languageCode: "en-US",
       name: "en-US-Wavenet-D",
-      ssmlGender: "MALE",
     },
     audioConfig: {
+      // audioEncoding: "MP3",
       audioEncoding: "OGG_OPUS",
-      effectsProfileId: ["headphone-class-device"],
-      // sampleRateHertz: 48000,
-      volumeGainDb: 10,
-      pitch: -3.2,
+      // effectsProfileId: ["headphone-class-device"],
+      effectsProfileId: ["large-home-entertainment-class-device"],
+      // sampleRateHertz: 96000,
+      volumeGainDb: 4,
+      pitch: -2.5,
     },
   };
 
   try {
     const response = await googleResponse(request);
-    await streamingVoice(req, res, response.audioContent, "audio/ogg");
+    // await streamingVoice(req, res, response.audioContent, "audio/opus", true);
 
-    // const duplexStream = new Stream.Duplex();
+    const readableStream = new Stream.Readable();
 
-    // duplexStream.push(response.audioContent);
-    // duplexStream.push(null);
-    // duplexStream.pipe(res);
-    console.log("voice loaded");
+    readableStream.push(response.audioContent);
+    readableStream.push(null);
+    readableStream.pipe(res);
   } catch (error) {
     console.error(error);
+  }
+};
+
+exports.getSoundEffect = async (req, res, next) => {
+  const { name } = req.query;
+  const path = `${__dirname}/../sounds/${name}.opus`;
+
+  try {
+    await streaming(req, res, path, "audio/opus");
+  } catch (error) {
+    console.log(error);
   }
 };
