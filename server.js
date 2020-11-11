@@ -2,7 +2,6 @@
 const fs = require("fs");
 const dotenv = require("dotenv");
 const https = require("https");
-const spdy = require("spdy");
 
 dotenv.config({ path: `${__dirname}/config.env` });
 const port = process.env.PORT;
