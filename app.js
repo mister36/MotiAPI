@@ -26,6 +26,9 @@ app.use(helmet());
 // });
 
 // !Use routes
+app.get("/", (req, res) => {
+  res.send("Welcome to the Motisesh API");
+});
 app.use("/api/v1/audio", audioRouter);
 
 // TODO : Remove this

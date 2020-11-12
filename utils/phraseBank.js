@@ -702,7 +702,7 @@ Without passion you have no energy.without energy,<break time="100ms"/><prosody 
 </speak>`,
 
     `<speak>
-<prosody rate="103%">Failing today is not an excuse for quitting tomorrow.<brea, time="400ms"/><prosody pitch="-1st">Let's go</prosody></prosody>
+<prosody rate="103%">Failing today is not an excuse for quitting tomorrow.<break, time="400ms"/><prosody pitch="-1st">Let's go</prosody></prosody>
 </speak>`,
 
     `<speak>
