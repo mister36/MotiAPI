@@ -1,6 +1,6 @@
 const fs = require("fs");
 const Stream = require("stream");
-const { promisify } = require("util");
+const path = require("path");
 const _ = require("lodash");
 
 // const es = require("event-stream");
@@ -72,12 +72,17 @@ exports.getBackgroundAudio = async (req, res, next) => {
     });
   }
 
-  mime = "audio/opus";
+  // mime = "audio/opus";
 
-  const path = `${__dirname}/../music/${name}.opus`;
+  const musicPath = path.resolve(`${__dirname}/../music/${name}.opus`);
+  // const path = `${__dirname}/../music/${name}.opus`;
 
   try {
-    await streaming(req, res, path, mime);
+    // res.writeHead(200, {
+    //   "Content-Type": "audio/opus",
+    // });
+    res.sendFile(musicPath, { headers: { "Content-Type": "audio/opus" } });
+    // await streaming(req, res, path, mime);
     // fs.createReadStream(path).pipe(res);
     console.log("SENT OGG SUCCESSFULLY");
   } catch (error) {
