@@ -106,6 +106,11 @@ exports.getGoogleVoice = async (req, res, next) => {
     ssmlArr = heroBank(firstName);
   } else if (genre === "rise") {
     ssmlArr = riseBank(firstName);
+  } else {
+    return res.status(400).json({
+      status: "fail",
+      message: "Must enter a valid genre",
+    });
   }
   // Random statement
   const ssml = ssmlArr[_.random(0, ssmlArr.length - 1, false)];
