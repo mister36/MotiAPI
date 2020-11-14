@@ -9,7 +9,7 @@ router.route("/background.mp3").get(audioController.getBackgroundAudioMP3);
 
 router.route("/voice.opus").get(audioController.getGoogleVoice);
 
-router.route("/sound.opus").get(audioController.getSoundEffect);
+router.route("/sound.mp3").get(audioController.getSoundEffect);
 
 // router.route("/test.opus").get(audioController.testMP3);
 

@@ -18,9 +18,27 @@ const songs = [
   "rise6",
 ];
 
-exports.backgroundAudio = (mime) => async (req, res, next) => {
+const sounds = [
+  "explosion",
+  "horse",
+  "sword_fight",
+  "tiger",
+  "tomorrow_chant",
+  "war_chant",
+  "yes_chant",
+];
+
+exports.serveStaticAudio = (mime) => async (req, res, next) => {
   let { name } = req.query;
-  let extension;
+  let extension, resourceType, musicPath;
+
+  // determines whether user is asking for song or sound
+  if (req.url.includes("background")) {
+    resourceType = "song";
+  } else if (req.url.includes("sound")) {
+    resourceType = "sound";
+  }
+
   switch (mime.slice(6)) {
     case "mpeg":
       extension = "mp3";
@@ -36,14 +54,26 @@ exports.backgroundAudio = (mime) => async (req, res, next) => {
     });
   }
 
-  if (!songs.includes(name)) {
+  // If client asked for background  but name not in song array
+  if (resourceType === "song" && !songs.includes(name)) {
     return res.status(400).json({
       status: "fail",
       message: "Invalid song name",
     });
+  } else if (resourceType === "sound" && !sounds.includes(name)) {
+    // If client asked for sound  but name not in sound array
+    return res.status(400).json({
+      status: "fail",
+      message: "Invalid sound name",
+    });
   }
 
-  const musicPath = path.resolve(`${__dirname}/../music/${name}.${extension}`);
+  // Determines correct directory based off resourceType (song or sound)
+  if (resourceType === "song") {
+    musicPath = path.resolve(`${__dirname}/../music/${name}.${extension}`);
+  } else if (resourceType === "sound") {
+    musicPath = path.resolve(`${__dirname}/../sounds/${name}.${extension}`);
+  }
 
   try {
     res.sendFile(musicPath, { headers: { "Content-Type": mime } });

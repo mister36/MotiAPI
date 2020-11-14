@@ -14,7 +14,7 @@ const {
 const {
   streaming,
   streamingVoice,
-  backgroundAudio,
+  serveStaticAudio,
 } = require("../utils/factory");
 
 const durationToBytes = (duration = 60, bitrate = 320) => {
@@ -22,31 +22,6 @@ const durationToBytes = (duration = 60, bitrate = 320) => {
   // Duration in seconds, bitrate in kbps
   return ((duration * bitrate) / 8) * 1024;
 };
-
-const songs = [
-  "hero1",
-  "hero2",
-  "hero3",
-  "hero4",
-  "hero5",
-  "hero6",
-  "rise1",
-  "rise2",
-  "rise3",
-  "rise4",
-  "rise5",
-  "rise6",
-];
-
-const sounds = [
-  "explosion",
-  "horse",
-  "sword_fight",
-  "tiger",
-  "tomorrow_chant",
-  "war_chant",
-  "yes_chant",
-];
 
 const googleResponse = async (request) => {
   const client = new textToSpeech.TextToSpeechClient();
@@ -59,44 +34,9 @@ const googleResponse = async (request) => {
   }
 };
 
-exports.getBackgroundAudioOpus = backgroundAudio("audio/opus");
-exports.getBackgroundAudioMP3 = backgroundAudio("audio/mpeg");
-// let { name } = req.query;
-
-// if (!name) {
-//   return res.status(400).json({
-//     status: "fail",
-//     message: "Must enter a name",
-//   });
-// }
-
-// if (!songs.includes(name)) {
-//   return res.status(400).json({
-//     status: "fail",
-//     message: "Invalid song name",
-//   });
-// }
-
-// // mime = "audio/opus";
-
-// const musicPath = path.resolve(`${__dirname}/../music/${name}.opus`);
-// // const path = `${__dirname}/../music/${name}.opus`;
-
-// try {
-//   // res.writeHead(200, {
-//   //   "Content-Type": "audio/opus",
-//   // });
-//   res.sendFile(musicPath, { headers: { "Content-Type": "audio/opus" } });
-//   // await streaming(req, res, path, mime);
-//   // fs.createReadStream(path).pipe(res);
-//   console.log("SENT OGG SUCCESSFULLY");
-// } catch (error) {
-//   console.error(error);
-//   res.status(500).json({
-//     status: "Error",
-//     message: "Server error",
-//   });
-// }
+exports.getBackgroundAudioOpus = serveStaticAudio("audio/opus");
+exports.getBackgroundAudioMP3 = serveStaticAudio("audio/mpeg");
+exports.getSoundEffect = serveStaticAudio("audio/mpeg");
 
 exports.getGoogleVoice = async (req, res, next) => {
   let ssmlArr;
@@ -163,32 +103,32 @@ exports.getGoogleVoice = async (req, res, next) => {
   }
 };
 
-exports.getSoundEffect = async (req, res, next) => {
-  const { name } = req.query;
+// async (req, res, next) => {
+//   const { name } = req.query;
 
-  if (!name) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Must enter a name",
-    });
-  }
+//   if (!name) {
+//     return res.status(400).json({
+//       status: "fail",
+//       message: "Must enter a name",
+//     });
+//   }
 
-  if (!sounds.includes(name)) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Invalid sound name",
-    });
-  }
+//   if (!sounds.includes(name)) {
+//     return res.status(400).json({
+//       status: "fail",
+//       message: "Invalid sound name",
+//     });
+//   }
 
-  const path = `${__dirname}/../sounds/${name}.opus`;
+//   const path = `${__dirname}/../sounds/${name}.opus`;
 
-  try {
-    await streaming(req, res, path, "audio/opus");
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      status: "Error",
-      message: "Server error",
-    });
-  }
-};
+//   try {
+//     await streaming(req, res, path, "audio/opus");
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({
+//       status: "Error",
+//       message: "Server error",
+//     });
+//   }
+// };
