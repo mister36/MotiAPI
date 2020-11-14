@@ -11,7 +11,11 @@ const {
   heroBank,
   riseBank,
 } = require("../utils/phraseBank");
-const { streaming, streamingVoice } = require("../utils/factory");
+const {
+  streaming,
+  streamingVoice,
+  backgroundAudio,
+} = require("../utils/factory");
 
 const durationToBytes = (duration = 60, bitrate = 320) => {
   // Converts duration of song to size in bytes
@@ -55,44 +59,44 @@ const googleResponse = async (request) => {
   }
 };
 
-exports.getBackgroundAudio = async (req, res, next) => {
-  let { name } = req.query;
+exports.getBackgroundAudioOpus = backgroundAudio("audio/opus");
+exports.getBackgroundAudioMP3 = backgroundAudio("audio/mpeg");
+// let { name } = req.query;
 
-  if (!name) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Must enter a name",
-    });
-  }
+// if (!name) {
+//   return res.status(400).json({
+//     status: "fail",
+//     message: "Must enter a name",
+//   });
+// }
 
-  if (!songs.includes(name)) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Invalid song name",
-    });
-  }
+// if (!songs.includes(name)) {
+//   return res.status(400).json({
+//     status: "fail",
+//     message: "Invalid song name",
+//   });
+// }
 
-  // mime = "audio/opus";
+// // mime = "audio/opus";
 
-  const musicPath = path.resolve(`${__dirname}/../music/${name}.opus`);
-  // const path = `${__dirname}/../music/${name}.opus`;
+// const musicPath = path.resolve(`${__dirname}/../music/${name}.opus`);
+// // const path = `${__dirname}/../music/${name}.opus`;
 
-  try {
-    // res.writeHead(200, {
-    //   "Content-Type": "audio/opus",
-    // });
-    res.sendFile(musicPath, { headers: { "Content-Type": "audio/opus" } });
-    // await streaming(req, res, path, mime);
-    // fs.createReadStream(path).pipe(res);
-    console.log("SENT OGG SUCCESSFULLY");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      status: "Error",
-      message: "Server error",
-    });
-  }
-};
+// try {
+//   // res.writeHead(200, {
+//   //   "Content-Type": "audio/opus",
+//   // });
+//   res.sendFile(musicPath, { headers: { "Content-Type": "audio/opus" } });
+//   // await streaming(req, res, path, mime);
+//   // fs.createReadStream(path).pipe(res);
+//   console.log("SENT OGG SUCCESSFULLY");
+// } catch (error) {
+//   console.error(error);
+//   res.status(500).json({
+//     status: "Error",
+//     message: "Server error",
+//   });
+// }
 
 exports.getGoogleVoice = async (req, res, next) => {
   let ssmlArr;

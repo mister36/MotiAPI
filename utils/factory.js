@@ -1,6 +1,60 @@
 const fs = require("fs");
 const stream = require("stream");
+const path = require("path");
 const { promisify } = require("util");
+
+const songs = [
+  "hero1",
+  "hero2",
+  "hero3",
+  "hero4",
+  "hero5",
+  "hero6",
+  "rise1",
+  "rise2",
+  "rise3",
+  "rise4",
+  "rise5",
+  "rise6",
+];
+
+exports.backgroundAudio = (mime) => async (req, res, next) => {
+  let { name } = req.query;
+  let extension;
+  switch (mime.slice(6)) {
+    case "mpeg":
+      extension = "mp3";
+      break;
+    default:
+      extension = mime.slice(6);
+  }
+
+  if (!name) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Must enter a name",
+    });
+  }
+
+  if (!songs.includes(name)) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Invalid song name",
+    });
+  }
+
+  const musicPath = path.resolve(`${__dirname}/../music/${name}.${extension}`);
+
+  try {
+    res.sendFile(musicPath, { headers: { "Content-Type": mime } });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "Error",
+      message: "Server error",
+    });
+  }
+};
 
 exports.streaming = async (req, res, path, contentType, chunk = false) => {
   try {

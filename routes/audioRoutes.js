@@ -3,7 +3,9 @@ const audioController = require("../controllers/audioController");
 
 const router = express.Router();
 
-router.route("/background.opus").get(audioController.getBackgroundAudio);
+router.route("/background.opus").get(audioController.getBackgroundAudioOpus);
+
+router.route("/background.mp3").get(audioController.getBackgroundAudioMP3);
 
 router.route("/voice.opus").get(audioController.getGoogleVoice);
 
