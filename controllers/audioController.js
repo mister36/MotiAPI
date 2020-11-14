@@ -1,4 +1,5 @@
 const fs = require("fs");
+const { promisify } = require("util");
 const Stream = require("stream");
 const path = require("path");
 const _ = require("lodash");
@@ -24,7 +25,8 @@ const durationToBytes = (duration = 60, bitrate = 320) => {
 };
 
 const googleResponse = async (request) => {
-  const client = new textToSpeech.TextToSpeechClient();
+  const client = new textToSpeech.v1beta1.TextToSpeechClient();
+  // const client = new textToSpeech.TextToSpeechClient();
   try {
     const [response] = await client.synthesizeSpeech(request);
 
@@ -39,9 +41,10 @@ exports.getBackgroundAudioMP3 = serveStaticAudio("audio/mpeg");
 exports.getSoundEffect = serveStaticAudio("audio/mpeg");
 
 exports.getGoogleVoice = async (req, res, next) => {
-  let ssmlArr;
   const { firstName, firstVoice, genre } = req.query;
+  let ssmlArr;
 
+  // Error if no first name or genre provided
   if (!firstName || !genre) {
     return res.status(400).json({
       status: "fail",
@@ -49,6 +52,7 @@ exports.getGoogleVoice = async (req, res, next) => {
     });
   }
 
+  // checks genre, returns error if one provided isn't available
   if (firstVoice) {
     ssmlArr = startingVoice(firstName);
   } else if (genre === "hero") {
@@ -64,7 +68,7 @@ exports.getGoogleVoice = async (req, res, next) => {
   // Random statement
   const ssml = ssmlArr[_.random(0, ssmlArr.length - 1, false)];
 
-  console.log(ssml);
+  // console.log(ssml);
 
   const request = {
     input: {
@@ -75,9 +79,7 @@ exports.getGoogleVoice = async (req, res, next) => {
       name: "en-US-Wavenet-D",
     },
     audioConfig: {
-      // audioEncoding: "MP3",
-      audioEncoding: "OGG_OPUS",
-      // effectsProfileId: ["headphone-class-device"],
+      audioEncoding: "MP3_64_KBPS",
       effectsProfileId: ["large-home-entertainment-class-device"],
       // sampleRateHertz: 96000,
       volumeGainDb: 4,
@@ -87,13 +89,9 @@ exports.getGoogleVoice = async (req, res, next) => {
 
   try {
     const response = await googleResponse(request);
-    // await streamingVoice(req, res, response.audioContent, "audio/opus", true);
 
-    const readableStream = new Stream.Readable();
-
-    readableStream.push(response.audioContent);
-    readableStream.push(null);
-    readableStream.pipe(res);
+    res.set({ "Content-Type": "audio/mpeg" });
+    res.send(response.audioContent);
   } catch (error) {
     console.error(error);
     res.status(500).json({
