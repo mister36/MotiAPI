@@ -16,6 +16,7 @@ const songs = [
   "rise4",
   "rise5",
   "rise6",
+  "silence",
 ];
 
 const sounds = [
