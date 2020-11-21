@@ -550,7 +550,7 @@ C'mon, <prosody pitch="-1st">you can work harder than that.</prosody>
 </speak>`,
 
     `<speak>
-<prosody rate="93%">It's not you vs the world, Adam. <prosody pitch="-1st">It's you vs yourself</prosody></prosody>
+<prosody rate="93%">It's not you vs the world, ${name}. <prosody pitch="-1st">It's you vs yourself</prosody></prosody>
 </speak>`,
 
     `<speak>
@@ -570,7 +570,7 @@ Keep going until you break.<prosody pitch="1st">And when you break,<break time="
 </speak>`,
 
     `<speak>
-<prosody rate="110%">You will not win by accident, Adam. <prosody pitch="-2st">Sacrifice is necessary</prosody></prosody>
+<prosody rate="110%">You will not win by accident, ${name}. <prosody pitch="-2st">Sacrifice is necessary</prosody></prosody>
 </speak>`,
 
     `<speak>
@@ -742,7 +742,7 @@ Without passion you have no energy.without energy,<break time="100ms"/><prosody 
 </speak>`,
 
     `<speak>
-<prosody rate="105%">Danger is your best friend, Adam<prosody pitch="-1st">Learn to love it,and who can stop you?</prosody></prosody>
+<prosody rate="105%">Danger is your best friend, ${name}<prosody pitch="-1st">Learn to love it,and who can stop you?</prosody></prosody>
 </speak>`,
 
     `<speak>
