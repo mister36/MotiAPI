@@ -27,6 +27,8 @@ const sounds = [
   "tomorrow_chant",
   "war_chant",
   "yes_chant",
+  "bang",
+  "ferocious",
 ];
 
 exports.serveStaticAudio = (mime) => async (req, res, next) => {
