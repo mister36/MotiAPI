@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "dependable-star-296602",
+  "private_key_id": "74e64063af64ae99869101ffc6262158a05b42d0",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDXUzoctI5Xu9xV\nyRT6PF3Tk9c0PvIwP3IYSq2uJroVqS/7smpZfFsrLuaV8JdQHwN1fn20fcWpNFxN\nI/LYZFV/kfimcm2JXaZLsj3vvLJdbAM8Zc5m++cWcsg4P7KAbivKS4s5AF/UrqXX\ntGfjJJGBhs3Iy75kDttupFvKEAwZrfsVyiOA4Emx29Lph6Xk7EvyVt7bbV+rWrkf\nJ+iBkjRe2MKSTwQJ6eTuxeGbrsiLe7qOJPb1wC1teNGomLb222bhFNb4Hhuj2WLo\nP9iFqIsn9821fWxGEAfIi8k0zLYAcaNgnNDA8yG6iLWPWR0nW7+ZrVdzmrJt3t61\napzKR1mpAgMBAAECggEAHVVZNU/jlFAjVAxwryZKIeiiCJwKokgCYwzJXFAqSYki\n4EcN9eLbCKb7ArIj6uZOslLpDQ2VP9fCO0AKdTA19YsNNJ+iDHSVkvpVNbOfGNr+\nFdxIof7vHD/GxuLmjlhz3rsr3DgQ1gh0z03kWS1CJUMYBaK77SWY/xmk54III/cv\npJ6OFiqM6E1J4Tds68sW4kXSoFgmUp3Y2FAuIqcBAywPe4BLp0nIRdWJwijMILSM\nKaHM8c6PducWhC1LZSI08VrQs5TPiMBHmzxip2xJYu35BuOoj2NkpVyVlwQwKbyT\n98PA7f6xXA///DnasHQDYT3D9FgdbaMzeUGyJ+whgQKBgQDs4c6mfZQumJYGR75M\nZG68ShpAqm3AxeJUj/k3GEPmaotjl6NPP6XaS0SyRUSkD59jaGPQOSnFDnYlXJB/\npZgUnNU0rwxv4ooybBdMMKgtCA+LmlWEEyhqFOmkrrTLfx5FNbxjfeob/fVwTLCk\nBfTru4ZaKJjG/ypo4MiTDEjRDwKBgQDotAi3JIppd/KyhjjjC0WDWIDV/GNxoIiU\njgGMKzkYcaIrYPw/H+br6U1as3lU15j9R03PAYibmRZ5gg8cLgFtO4nlxbMSl5DI\n7dJbl44bn7I864mkq64nFcb9bJR/qysPl2LuIRijtTIfSizc2WkC+LqRazwiUj4Q\nFSxDRde5xwKBgQDPB7OSs2KVLuq/5mgdYBGgIqu7JLjzqH9dJM/NJToC4c+dZWRn\n2NrdZLdPj1akhLrrKMtDqxIklbUQhkwMI/A84607dFpMVxQtaWcbQdNaOBdODb77\nxbqmrExfkAmXaSxNlN9nnR7FBDpEweIIGOSsOqL7nUuZcF3id8MVMcFaZQKBgAHH\nZo2n3NsDjLpqpkKuEmD3qzx3incS6BhioYZlyjDypW+5dRQydTx2cx3vY00PvN6q\nzeB4PYga+n4BTYZEn8QrAVndUgohWH0AvGvw06hIZz9p+YpluZYY54WGb/gt4c1j\nteDmJd8SgoiUs5UYoGHibuKvtCz6/fh3gPger5B/AoGBAJO0nuWmCA88GZoVOelV\nAnyMtgJhl9zYxw3T7bMJUhPSCTvHyzz2X4UkYITUxatgKLXf5NoGYDDD3rsniOm5\nNgn7MT9JQjXGJtWM4un7qXkZ6NofFtNIrMaTkbOp0aytMLh2iNHnSXoKaAsH0lpY\nGJ+DjcNJJrxvZDXCYH1ZTfXg\n-----END PRIVATE KEY-----\n",
+  "client_email": "moti-sesh-provider@dependable-star-296602.iam.gserviceaccount.com",
+  "client_id": "105364033331040416717",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/moti-sesh-provider%40dependable-star-296602.iam.gserviceaccount.com"
+}
