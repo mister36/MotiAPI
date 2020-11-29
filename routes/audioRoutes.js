@@ -13,6 +13,8 @@ router.route("/voice.mp3").get(audioController.getGoogleVoice);
 
 router.route("/sound.mp3").get(audioController.getSoundEffect);
 
+router.route("/download").get(audioController.downloadSpeech);
+
 // router.route("/test.opus").get(audioController.testMP3);
 
 // router.route("/test").get(audioController.testGoogleMedia);

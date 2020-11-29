@@ -1,5 +1,4 @@
 const PushNotifications = require("node-pushnotifications");
-const jwt = require("jsonwebtoken");
 
 // const token = jwt.sign({});
 

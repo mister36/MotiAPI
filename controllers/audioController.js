@@ -101,32 +101,45 @@ exports.getGoogleVoice = async (req, res, next) => {
   }
 };
 
-// async (req, res, next) => {
-//   const { name } = req.query;
+exports.downloadSpeech = async (req, res, next) => {
+  const client = new textToSpeech.v1beta1.TextToSpeechClient();
 
-//   if (!name) {
-//     return res.status(400).json({
-//       status: "fail",
-//       message: "Must enter a name",
-//     });
-//   }
+  const request = {
+    input: {
+      ssml: `<speak>
+      <prosody pitch="-1.5st">When pain stares you in your face?<break time="300ms"/> <prosody pitch="-1.5st">keep going</prosody>
+    </prosody>  
+    </speak>`,
+    },
+    voice: {
+      languageCode: "en-US",
+      name: "en-US-Wavenet-D",
+    },
+    audioConfig: {
+      audioEncoding: "LINEAR16",
+      effectsProfileId: ["headphone-class-device"],
+      sampleRateHertz: 48000,
+      // volumeGainDb: 4,
+      pitch: -0.8,
+    },
+  };
+  try {
+    const [response] = await client.synthesizeSpeech(request);
 
-//   if (!sounds.includes(name)) {
-//     return res.status(400).json({
-//       status: "fail",
-//       message: "Invalid sound name",
-//     });
-//   }
+    const filename = "file15";
 
-//   const path = `${__dirname}/../sounds/${name}.opus`;
+    fs.writeFileSync(
+      `${__dirname}/../speech/${filename}.wav`,
+      response.audioContent
+    );
 
-//   try {
-//     await streaming(req, res, path, "audio/opus");
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({
-//       status: "Error",
-//       message: "Server error",
-//     });
-//   }
-// };
+    res.status(200).json({
+      message: `${filename}.wav saved`,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error,
+    });
+  }
+};
