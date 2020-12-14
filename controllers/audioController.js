@@ -107,8 +107,8 @@ exports.downloadSpeech = async (req, res, next) => {
   const request = {
     input: {
       ssml: `<speak>
-      <prosody pitch="-1.5st">When pain stares you in your face?<break time="300ms"/> <prosody pitch="-1.5st">keep going</prosody>
-    </prosody>  
+      <prosody>But make it through this, <break time="300ms"/> <prosody pitch="-2st">and I promise,<break time="600ms"/> you will come out great</prosody> 
+    </prosody> 
     </speak>`,
     },
     voice: {
@@ -118,15 +118,16 @@ exports.downloadSpeech = async (req, res, next) => {
     audioConfig: {
       audioEncoding: "LINEAR16",
       effectsProfileId: ["headphone-class-device"],
-      sampleRateHertz: 48000,
+      sampleRateHertz: 24000,
+      speed: 1.07,
       // volumeGainDb: 4,
-      pitch: -0.8,
+      pitch: -1.6,
     },
   };
   try {
     const [response] = await client.synthesizeSpeech(request);
 
-    const filename = "file15";
+    const filename = "file23";
 
     fs.writeFileSync(
       `${__dirname}/../speech/${filename}.wav`,
