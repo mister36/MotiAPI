@@ -9,6 +9,7 @@ const NotificationService = require("./pushNotifications");
 // !Import routers
 const audioRouter = require("./routes/audioRoutes");
 const rasaRouter = require("./routes/rasaRoutes");
+const userRouter = require("./routes/userRoutes");
 
 // !Initialize
 const app = express();
@@ -31,7 +32,8 @@ app.get("/", (req, res) => {
   res.send("Welcome to the Motisesh API");
 });
 app.use("/api/v1/audio", audioRouter);
-app.use("/api/v1/rasa", rasaRouter);
+app.use("/api/v1/chatbot", rasaRouter);
+app.use("/api/v1/user", userRouter);
 
 // TODO : Remove this
 app.get("/test-send", async (req, res) => {
