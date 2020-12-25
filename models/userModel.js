@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+// MIDDLEWARE
 // hashing password
 userSchema.pre("save", async function(next) {
   // Only run this function if password was actually modified
@@ -34,5 +35,13 @@ userSchema.pre("save", async function(next) {
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
+
+// METHODS
+userSchema.methods.isCorrectPassword = async function(
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 module.exports = userSchema;

@@ -15,6 +15,7 @@
     "axios": "^0.21.0",
     "bcrypt": "^5.0.0",
     "cors": "^2.8.5",
+    "countries-and-timezones": "^2.3.1",
     "crypto-js": "^4.0.0",
     "dotenv": "^7.0.0",
     "event-stream": "^4.0.1",

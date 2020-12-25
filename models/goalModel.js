@@ -1,7 +1,11 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const goalSchema = new mongoose.Schema({
-  type: String,
+  type: {
+    type: String,
+    enum: ["mission", "habit", "task"],
+    required: [true, "Goal must have a type"],
+  },
   dateCreated: {
     type: Date,
     default: Date.now,
@@ -10,12 +14,17 @@ const goalSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  dateEnd: Date,
-  description: String,
+  dateEnd: {
+    type: Date,
+  },
+  description: {
+    type: String,
+    required: [true, "Goal must have a description"],
+  },
   // Repeats only for habits
   daysRepeat: [String],
   timeRepeat: Number,
-  _user_id: { type: Schema.Types.ObjectId, ref: "User" },
+  _user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
-export const Goal = mongoose.model("Goal", goalSchema);
+module.exports = goalSchema;

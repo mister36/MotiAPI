@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+const mongoose = require("mongoose");
 
 const moodSchema = new mongoose.Schema({
   description: String,
@@ -11,7 +11,7 @@ const moodSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  _user_id: { type: Schema.Types.ObjectId, ref: "User" },
+  _user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
 export const Mood = mongoose.model("Mood", moodSchema);
