@@ -14,16 +14,6 @@ const randArrayElem = (list = []) => {
   return list[_.random(list.length - 1)];
 };
 
-// converting utc time to user time
-// e.g 2020-12-23T06:30:00.000+00:00 -> 2020-12-23T06:30:00.000-06:00
-// only +00:00 changes
-// const UTCToUserTimeFormat = (utcTime, timezone = "America/Chicago") => {
-//   const { utcOffsetStr } = ct.getTimezone(timezone);
-//   const adjustedTime = utcTime.replace("+00:00", utcOffsetStr);
-
-//   return adjustedTime;
-// };
-
 exports.test = async (req, res, next) => {
   try {
     const response = await parseTime(
