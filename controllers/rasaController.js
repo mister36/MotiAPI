@@ -1,10 +1,8 @@
 const _ = require("lodash");
-const ct = require("countries-and-timezones");
 const axios = require("axios").default;
 const { motiConn } = require("../dbConnection");
 const goalSchema = require("../models/goalModel");
 const quotes = require("../static_files/quotes.json");
-const { reject } = require("lodash");
 // const fs = require("fs");
 
 const Goal = motiConn.model("Goal", goalSchema);

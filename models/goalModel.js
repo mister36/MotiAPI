@@ -21,6 +21,10 @@ const goalSchema = new mongoose.Schema({
     type: String,
     required: [true, "Goal must have a description"],
   },
+  completed: {
+    type: Boolean,
+    default: false,
+  },
   // Repeats only for habits
   daysRepeat: [String],
   timeRepeat: Number,
