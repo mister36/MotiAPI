@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  new: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 // MIDDLEWARE

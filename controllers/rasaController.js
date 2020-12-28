@@ -53,6 +53,10 @@ exports.action = async (req, res, next) => {
   const sender = request.sender_id;
   const responses = request.domain.responses;
   const active_form = request.tracker.active_form;
+  const name = slots.user_name;
+  const email = slots.user_email;
+
+  let texts;
 
   // send payload function
   const send = (load, status = 200) => {
@@ -63,6 +67,58 @@ exports.action = async (req, res, next) => {
   let resPayload = { events: [], responses: [] };
 
   switch (next_action) {
+    case "action_new_user":
+      texts = [
+        "Welcome to Motisesh! My name is Moti.",
+        "We’ll start by making a mission",
+        "Think of a mission as a super important goal that fulfills your highest ambitions. It shouldn’t be to easy, but it shouldn’t be too challenging",
+      ];
+
+      texts.forEach((val) => {
+        resPayload.responses.push({
+          text: val,
+        });
+      });
+
+      send(resPayload);
+      break;
+
+    // SECTION: New mission form
+    case "action_ask_new_mission_form_mission":
+      texts = [
+        `So, ${name}, what is your mission? Be as specific as possible:`,
+      ];
+
+      resPayload.responses.push({
+        text: randArrayElem(texts),
+      });
+      send(resPayload);
+      break;
+
+    case "action_ask_new_mission_form_time":
+      texts = [
+        "Great! When do you want to accomplish this?",
+        "Awesome. When do you want to accomplish this?",
+      ];
+
+      resPayload.responses.push({
+        text: randArrayElem(texts),
+      });
+      send(resPayload);
+
+      break;
+
+    case "action_save_mission":
+      // TODO: Save the mission into database (use "actual_time", not "time"!!!)
+      // TODO: Set "user.isNew" to false in database
+      resPayload.responses.push({
+        text: `Perfect. Just saved your mission: ${slots.mission} at ${slots.actual_time}`,
+      });
+      send(resPayload);
+
+      break;
+
+    // SECTION: Quote
     case "action_grab_quote":
       // picks random quote
       const randomQuoteObj = quotes[_.random(0, quotes.length)];

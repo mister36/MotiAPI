@@ -19,8 +19,6 @@ const app = require("./app");
 const server = require("http").createServer(app);
 const io = require("socket.io")(server);
 
-// TODO - Set up JWT authentication with socket.io
-
 // ANCHOR NODE JS SERVER & REACT NATIVE
 
 // Middleware
@@ -44,6 +42,7 @@ io.use(async (client, next) => {
   try {
     const user = await User.findOne({ email: client.email });
     client.mongoId = user._id;
+    client.isNew = user.new;
     next();
   } catch (error) {
     console.log(error);
@@ -66,24 +65,46 @@ io.on("connection", (client) => {
     path: "/socket.io",
   });
 
+  // Connection to Rasa socket
   rasaSocket.on("connect", () => {
     console.log("Socket connected to Rasa");
-    rasaSocket.emit("session_request", { session_id: client.mongoId });
+
+    rasaSocket.emit("session_request", { session_id: client.mongoId + 1 });
+
+    // Sets "user_name" and "user_email" slots
+    rasaSocket.emit(
+      "user_message",
+      {
+        message:
+          "/set_info" +
+          JSON.stringify({ user_name: client.name, user_email: client.email }),
+        session_id: client.mongoId + 1,
+      },
+      () => {
+        // sends 'new_user' intent if user is new
+        if (client.isNew) {
+          rasaSocket.emit("user_message", {
+            session_id: client.mongoId + 1,
+            message: "/new_user",
+          });
+        }
+      }
+    );
   });
 
   rasaSocket.on("disconnect", () => {
     console.log("Rasa socket disconnected");
   });
 
+  rasaSocket.on("bot_message", (message) => {
+    console.log("bot message: ", message);
+    client.emit("bot_message", message.text);
+  });
+
   client.on("user_message", (message) => {
-    console.log(message);
     rasaSocket.emit("user_message", {
       message: message,
-      session_id: client.mongoId,
-    });
-
-    rasaSocket.on("bot_message", (message) => {
-      client.emit("bot_message", message.text);
+      session_id: client.mongoId + 1,
     });
   });
 });

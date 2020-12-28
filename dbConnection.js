@@ -7,6 +7,8 @@ const mongoDB = process.env.MONGO_DB,
   mongoDBChat = process.env.MONGO_DB_CHATBOT,
   mongoPass = process.env.MONGO_PASSWORD;
 
+// TODO: Look into {useCreateIndex: true, useFindAndModify: false} for mongoose options
+
 const motiConn = mongoose.createConnection(
   `mongodb+srv://motiapp:${mongoPass}@moti1.piqgh.mongodb.net/${mongoDB}?retryWrites=true&w=majority`,
   { useNewUrlParser: true, useUnifiedTopology: true, poolSize: 10 }

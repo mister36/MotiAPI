@@ -22,15 +22,17 @@ app.use(express.json());
 // Sets security headers
 app.use(helmet());
 
-// app.all("*", (req, res, next) => {
-//   // console.log(req.httpVersion);
-//   res.end(req.stream.session);
+// TODO: Remove this
+// app.use((req, res, next) => {
+//   console.log(req.body);
+//   next();
 // });
 
 // !Use routes
 app.get("/", (req, res) => {
   res.send("Welcome to the Motisesh API");
 });
+
 app.use("/api/v1/audio", audioRouter);
 app.use("/api/v1/chatbot", rasaRouter);
 app.use("/api/v1/user", userRouter);
