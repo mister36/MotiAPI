@@ -77,6 +77,7 @@ io.on("connection", (client) => {
 
   const rasaSocket = rasaIo("http://192.168.1.72:5005", {
     path: "/socket.io",
+    transports: ["websocket"],
   });
 
   // TODO: Change this:
@@ -94,7 +95,7 @@ io.on("connection", (client) => {
       "user_message",
       {
         message:
-          "/set_info" +
+          "/EXTERNAL_set_info" +
           JSON.stringify({
             user_name: client.name,
             user_email: client.email,
@@ -104,11 +105,11 @@ io.on("connection", (client) => {
         session_id: id,
       },
       () => {
-        // sends 'new_user' intent if user is new
+        // sends 'EXTERNAL_new_user' intent if user is new
         if (client.isNew) {
           rasaSocket.emit("user_message", {
             session_id: id,
-            message: "/new_user",
+            message: "/EXTERNAL_new_user",
           });
         }
       }
