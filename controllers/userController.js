@@ -5,7 +5,7 @@ const { motiConn } = require("../dbConnection");
 const User = motiConn.model("User", userSchema);
 
 const signToken = (data) => {
-  return jwt.sign(data, process.env.JWT_SECRET, { expiresIn: "3 days" });
+  return jwt.sign(data, process.env.JWT_SECRET, { expiresIn: "3 years" });
 };
 
 exports.signUp = async (req, res, next) => {
@@ -48,9 +48,11 @@ exports.login = async (req, res, next) => {
         status: "success",
         email,
         name: user.name,
+        token: signToken({ name: user.name, email }),
       });
     }
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       status: "fail",
       error,

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const goalSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ["mission", "habit", "task"],
+    enum: ["habit", "task"],
     required: [true, "Goal must have a type"],
   },
   dateCreated: {
@@ -16,6 +16,7 @@ const goalSchema = new mongoose.Schema({
   },
   dateEnd: {
     type: Date,
+    required: [true, "Goal must have an end date"],
   },
   description: {
     type: String,
@@ -26,8 +27,13 @@ const goalSchema = new mongoose.Schema({
     default: false,
   },
   // Repeats only for habits
-  daysRepeat: [String],
-  timeRepeat: Number,
+  timeRepeat: {
+    type: String,
+  },
+  mission: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Mission",
+  },
   _user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 

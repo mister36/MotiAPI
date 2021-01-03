@@ -25,6 +25,7 @@ const io = require("socket.io")(server);
 io.use((client, next) => {
   // verifies JWT from client, throws error if invalid
   try {
+    // TODO: Determine correct way to use JWT with mobile
     const token = jwt.verify(
       client.handshake.auth.token,
       process.env.JWT_SECRET
@@ -54,8 +55,21 @@ io.use(async (client, next) => {
 io.on("connection", (client) => {
   console.log("User connected");
 
+  // ANCHOR Client events
   client.on("disconnect", () => {
     console.log("User disconnected");
+  });
+
+  client.on("greet", () => {
+    rasaSocket.emit("user_message", { session_id: id, message: "/greet" });
+  });
+
+  // Sending message to Rasa
+  client.on("user_message", (message) => {
+    rasaSocket.emit("user_message", {
+      message: message,
+      session_id: id,
+    });
   });
 
   // ANCHOR RASA & NODE JS
@@ -65,26 +79,35 @@ io.on("connection", (client) => {
     path: "/socket.io",
   });
 
+  // TODO: Change this:
+  const id = (Math.random() * 34234).toString(10);
+
+  // ANCHOR Rasa events
   // Connection to Rasa socket
   rasaSocket.on("connect", () => {
     console.log("Socket connected to Rasa");
 
-    rasaSocket.emit("session_request", { session_id: client.mongoId + 1 });
+    rasaSocket.emit("session_request", { session_id: id });
 
-    // Sets "user_name" and "user_email" slots
+    // Sets "user_name", "user_email", "user_id" slots
     rasaSocket.emit(
       "user_message",
       {
         message:
           "/set_info" +
-          JSON.stringify({ user_name: client.name, user_email: client.email }),
-        session_id: client.mongoId + 1,
+          JSON.stringify({
+            user_name: client.name,
+            user_email: client.email,
+            user_id: client.mongoId,
+            user_is_new: client.isNew,
+          }),
+        session_id: id,
       },
       () => {
         // sends 'new_user' intent if user is new
         if (client.isNew) {
           rasaSocket.emit("user_message", {
-            session_id: client.mongoId + 1,
+            session_id: id,
             message: "/new_user",
           });
         }
@@ -96,16 +119,9 @@ io.on("connection", (client) => {
     console.log("Rasa socket disconnected");
   });
 
+  // Sending message to client
   rasaSocket.on("bot_message", (message) => {
-    console.log("bot message: ", message);
     client.emit("bot_message", message.text);
-  });
-
-  client.on("user_message", (message) => {
-    rasaSocket.emit("user_message", {
-      message: message,
-      session_id: client.mongoId + 1,
-    });
   });
 });
 

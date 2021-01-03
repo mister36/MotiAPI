@@ -1,0 +1,808 @@
+{
+  "_id": { "$oid": "5fec10d50a813f21b990fa8f" },
+  "sender_id": "3273.999455152335",
+  "active_loop": {
+    "name": "record_motivation_form",
+    "is_interrupted": false,
+    "rejected": false,
+    "trigger_message": {
+      "intent": {
+        "id": { "$numberLong": "-1030662672901839534" },
+        "name": "goodbye",
+        "confidence": 0.5972132086753845
+      },
+      "entities": [
+        {
+          "start": 0,
+          "end": 17,
+          "text": "2 months from now",
+          "value": "2021-02-28T00:00:00.000+00:00",
+          "confidence": 1,
+          "additional_info": {
+            "values": [
+              {
+                "value": "2021-02-28T00:00:00.000+00:00",
+                "grain": "day",
+                "type": "value"
+              }
+            ],
+            "value": "2021-02-28T00:00:00.000+00:00",
+            "grain": "day",
+            "type": "value"
+          },
+          "entity": "time",
+          "extractor": "DucklingEntityExtractor"
+        }
+      ],
+      "text": "2 months from now",
+      "message_id": "46ad88936cf548da948c816778c35837",
+      "metadata": {},
+      "intent_ranking": [
+        {
+          "id": { "$numberLong": "-1030662672901839534" },
+          "name": "goodbye",
+          "confidence": 0.5972132086753845
+        },
+        {
+          "id": { "$numberLong": "-2503062070315642906" },
+          "name": "mood_great",
+          "confidence": 0.17613397538661957
+        },
+        {
+          "id": { "$numberLong": "-3477967296953446960" },
+          "name": "bot_challenge",
+          "confidence": 0.11104792356491089
+        },
+        {
+          "id": { "$numberLong": "-3340609542777257312" },
+          "name": "inform",
+          "confidence": 0.04301757737994194
+        },
+        {
+          "id": { "$numberLong": "-6750676784152633216" },
+          "name": "motivational_quote",
+          "confidence": 0.017580771818757057
+        },
+        {
+          "id": { "$numberLong": "-3498994587077189871" },
+          "name": "set_info",
+          "confidence": 0.01684841513633728
+        },
+        {
+          "id": { "$numberLong": "2999275571798071513" },
+          "name": "new_user",
+          "confidence": 0.012428809888660908
+        },
+        {
+          "id": { "$numberLong": "-8746748015637839853" },
+          "name": "affirm",
+          "confidence": 0.011739763431251049
+        },
+        {
+          "id": { "$numberLong": "-6794647037503095708" },
+          "name": "deny",
+          "confidence": 0.011550375260412693
+        },
+        {
+          "id": { "$numberLong": "2714337960507359639" },
+          "name": "mood_unhappy",
+          "confidence": 0.00243920786306262
+        }
+      ],
+      "response_selector": {
+        "all_retrieval_intents": [],
+        "default": {
+          "response": {
+            "id": null,
+            "response_templates": null,
+            "confidence": 0,
+            "intent_response_key": null,
+            "template_name": "utter_None"
+          },
+          "ranking": []
+        }
+      }
+    }
+  },
+  "events": [
+    {
+      "event": "action",
+      "timestamp": 1609306325.896775,
+      "name": "action_session_start",
+      "policy": null,
+      "confidence": 1,
+      "action_text": null
+    },
+    { "event": "session_started", "timestamp": 1609306325.89681 },
+    {
+      "event": "action",
+      "timestamp": 1609306325.896843,
+      "name": "action_listen",
+      "policy": null,
+      "confidence": null,
+      "action_text": null
+    },
+    {
+      "event": "user",
+      "timestamp": 1609306325.897815,
+      "text": "/set_info{\"user_name\":\"lila\",\"user_email\":\"lila@gmail.com\"}",
+      "parse_data": {
+        "intent": { "name": "set_info", "confidence": 1 },
+        "entities": [
+          { "entity": "user_name", "start": 9, "end": 59, "value": "lila" },
+          {
+            "entity": "user_email",
+            "start": 9,
+            "end": 59,
+            "value": "lila@gmail.com"
+          }
+        ],
+        "text": "/set_info{\"user_name\":\"lila\",\"user_email\":\"lila@gmail.com\"}",
+        "message_id": "1bf1c31536234ac6afd8b093b1d9cff4",
+        "metadata": {},
+        "intent_ranking": [{ "name": "set_info", "confidence": 1 }]
+      },
+      "input_channel": "socketio",
+      "message_id": "1bf1c31536234ac6afd8b093b1d9cff4",
+      "metadata": {}
+    },
+    {
+      "event": "slot",
+      "timestamp": 1609306325.897845,
+      "name": "user_name",
+      "value": "lila"
+    },
+    {
+      "event": "slot",
+      "timestamp": 1609306325.897852,
+      "name": "user_email",
+      "value": "lila@gmail.com"
+    },
+    {
+      "event": "user_featurization",
+      "timestamp": 1609306325.906632,
+      "use_text_for_featurization": false
+    },
+    {
+      "event": "action",
+      "timestamp": 1609306325.906642,
+      "name": "action_listen",
+      "policy": "policy_0_RulePolicy",
+      "confidence": 1,
+      "action_text": null
+    },
+    {
+      "event": "user",
+      "timestamp": 1609306326.0623941,
+      "text": "/new_user",
+      "parse_data": {
+        "intent": { "name": "new_user", "confidence": 1 },
+        "entities": [],
+        "text": "/new_user",
+        "message_id": "560df6c6830842739e6104c4ecfb58f2",
+        "metadata": {},
+        "intent_ranking": [{ "name": "new_user", "confidence": 1 }]
+      },
+      "input_channel": "socketio",
+      "message_id": "560df6c6830842739e6104c4ecfb58f2",
+      "metadata": {}
+    },
+    {
+      "event": "user_featurization",
+      "timestamp": 1609306326.088285,
+      "use_text_for_featurization": false
+    },
+    {
+      "event": "action",
+      "timestamp": 1609306326.088306,
+      "name": "action_new_user_mission",
+      "policy": "policy_0_RulePolicy",
+      "confidence": 1,
+      "action_text": null
+    },
+    {
+      "event": "bot",
+      "timestamp": 1609306326.088374,
+      "text": "Welcome to Motisesh! My name is Moti.",
+      "data": {
+        "elements": null,
+        "quick_replies": null,
+        "buttons": null,
+        "attachment": null,
+        "image": null,
+        "custom": null
+      },
+      "metadata": {}
+    },
+    {
+      "event": "bot",
+      "timestamp": 1609306326.088379,
+      "text": "We’ll start by making a mission",
+      "data": {
+        "elements": null,
+        "quick_replies": null,
+        "buttons": null,
+        "attachment": null,
+        "image": null,
+        "custom": null
+      },
+      "metadata": {}
+    },
+    {
+      "event": "bot",
+      "timestamp": 1609306326.0883808,
+      "text": "Think of a mission as a super important goal that you’d like to accomplish. It shouldn’t be too easy, but it shouldn’t be too challenging",
+      "data": {
+        "elements": null,
+        "quick_replies": null,
+        "buttons": null,
+        "attachment": null,
+        "image": null,
+        "custom": null
+      },
+      "metadata": {}
+    },
+    {
+      "event": "action",
+      "timestamp": 1609306326.097985,
+      "name": "new_mission_form",
+      "policy": "policy_0_RulePolicy",
+      "confidence": 1,
+      "action_text": null
+    },
+    {
+      "event": "active_loop",
+      "timestamp": 1609306326.09802,
+      "name": "new_mission_form"
+    },
+    {
+      "event": "slot",
+      "timestamp": 1609306326.0980248,
+      "name": "requested_slot",
+      "value": "mission"
+    },
+    {
+      "event": "bot",
+      "timestamp": 1609306326.098028,
+      "metadata": { "template_name": "utter_ask_new_mission_form_mission" },
+      "text": "So, lila, what is your mission? Be as specific as possible:",
+      "data": {
+        "elements": null,
+        "quick_replies": null,
+        "buttons": null,
+        "attachment": null,
+        "image": null,
+        "custom": null
+      }
+    },
+    {
+      "event": "action",
+      "timestamp": 1609306326.106743,
+      "name": "action_listen",
+      "policy": "policy_0_RulePolicy",
+      "confidence": 1,
+      "action_text": null
+    },
+    {
+      "event": "user",
+      "timestamp": 1609306346.060019,
+      "text": "Fuck Adam",
+      "parse_data": {
+        "intent": {
+          "id": { "$numberLong": "-1030662672901839534" },
+          "name": "goodbye",
+          "confidence": 0.8540385365486145
+        },
+        "entities": [],
+        "text": "Fuck Adam",
+        "message_id": "58e7e570ec6f4a8d92ec691210f3b39b",
+        "metadata": {},
+        "intent_ranking": [
+          {
+            "id": { "$numberLong": "-1030662672901839534" },
+            "name": "goodbye",
+            "confidence": 0.8540385365486145
+          },
+          {
+            "id": { "$numberLong": "-2503062070315642906" },
+            "name": "mood_great",
+            "confidence": 0.06145993620157242
+          },
+          {
+            "id": { "$numberLong": "-3340609542777257312" },
+            "name": "inform",
+            "confidence": 0.052098650485277176
+          },
+          {
+            "id": { "$numberLong": "-3477967296953446960" },
+            "name": "bot_challenge",
+            "confidence": 0.019185954704880714
+          },
+          {
+            "id": { "$numberLong": "-3498994587077189871" },
+            "name": "set_info",
+            "confidence": 0.0067237853072583675
+          },
+          {
+            "id": { "$numberLong": "-8746748015637839853" },
+            "name": "affirm",
+            "confidence": 0.0022653129417449236
+          },
+          {
+            "id": { "$numberLong": "-767171406844485991" },
+            "name": "greet",
+            "confidence": 0.0016609650338068604
+          },
+          {
+            "id": { "$numberLong": "-6794647037503095708" },
+            "name": "deny",
+            "confidence": 0.0014562674332410097
+          },
+          {
+            "id": { "$numberLong": "2999275571798071513" },
+            "name": "new_user",
+            "confidence": 0.0009482947061769664
+          },
+          {
+            "id": { "$numberLong": "2714337960507359639" },
+            "name": "mood_unhappy",
+            "confidence": 0.00016225854051299393
+          }
+        ],
+        "response_selector": {
+          "all_retrieval_intents": [],
+          "default": {
+            "response": {
+              "id": null,
+              "response_templates": null,
+              "confidence": 0,
+              "intent_response_key": null,
+              "template_name": "utter_None"
+            },
+            "ranking": []
+          }
+        }
+      },
+      "input_channel": "socketio",
+      "message_id": "58e7e570ec6f4a8d92ec691210f3b39b",
+      "metadata": {}
+    },
+    {
+      "event": "user_featurization",
+      "timestamp": 1609306346.0716128,
+      "use_text_for_featurization": false
+    },
+    {
+      "event": "action",
+      "timestamp": 1609306346.071624,
+      "name": "new_mission_form",
+      "policy": "policy_0_RulePolicy",
+      "confidence": 1,
+      "action_text": null
+    },
+    {
+      "event": "slot",
+      "timestamp": 1609306346.071658,
+      "name": "mission",
+      "value": "Fuck Adam"
+    },
+    {
+      "event": "slot",
+      "timestamp": 1609306346.0716622,
+      "name": "requested_slot",
+      "value": "time"
+    },
+    {
+      "event": "bot",
+      "timestamp": 1609306346.0716648,
+      "metadata": { "template_name": "utter_ask_new_mission_form_time" },
+      "text": "Great! When do you want to accomplish this?",
+      "data": {
+        "elements": null,
+        "quick_replies": null,
+        "buttons": null,
+        "attachment": null,
+        "image": null,
+        "custom": null
+      }
+    },
+    {
+      "event": "action",
+      "timestamp": 1609306346.080031,
+      "name": "action_listen",
+      "policy": "policy_0_RulePolicy",
+      "confidence": 1,
+      "action_text": null
+    },
+    {
+      "event": "user",
+      "timestamp": 1609306356.9446871,
+      "text": "2 months from now",
+      "parse_data": {
+        "intent": {
+          "id": { "$numberLong": "-1030662672901839534" },
+          "name": "goodbye",
+          "confidence": 0.5972132086753845
+        },
+        "entities": [
+          {
+            "start": 0,
+            "end": 17,
+            "text": "2 months from now",
+            "value": "2021-02-28T00:00:00.000+00:00",
+            "confidence": 1,
+            "additional_info": {
+              "values": [
+                {
+                  "value": "2021-02-28T00:00:00.000+00:00",
+                  "grain": "day",
+                  "type": "value"
+                }
+              ],
+              "value": "2021-02-28T00:00:00.000+00:00",
+              "grain": "day",
+              "type": "value"
+            },
+            "entity": "time",
+            "extractor": "DucklingEntityExtractor"
+          }
+        ],
+        "text": "2 months from now",
+        "message_id": "46ad88936cf548da948c816778c35837",
+        "metadata": {},
+        "intent_ranking": [
+          {
+            "id": { "$numberLong": "-1030662672901839534" },
+            "name": "goodbye",
+            "confidence": 0.5972132086753845
+          },
+          {
+            "id": { "$numberLong": "-2503062070315642906" },
+            "name": "mood_great",
+            "confidence": 0.17613397538661957
+          },
+          {
+            "id": { "$numberLong": "-3477967296953446960" },
+            "name": "bot_challenge",
+            "confidence": 0.11104792356491089
+          },
+          {
+            "id": { "$numberLong": "-3340609542777257312" },
+            "name": "inform",
+            "confidence": 0.04301757737994194
+          },
+          {
+            "id": { "$numberLong": "-6750676784152633216" },
+            "name": "motivational_quote",
+            "confidence": 0.017580771818757057
+          },
+          {
+            "id": { "$numberLong": "-3498994587077189871" },
+            "name": "set_info",
+            "confidence": 0.01684841513633728
+          },
+          {
+            "id": { "$numberLong": "2999275571798071513" },
+            "name": "new_user",
+            "confidence": 0.012428809888660908
+          },
+          {
+            "id": { "$numberLong": "-8746748015637839853" },
+            "name": "affirm",
+            "confidence": 0.011739763431251049
+          },
+          {
+            "id": { "$numberLong": "-6794647037503095708" },
+            "name": "deny",
+            "confidence": 0.011550375260412693
+          },
+          {
+            "id": { "$numberLong": "2714337960507359639" },
+            "name": "mood_unhappy",
+            "confidence": 0.00243920786306262
+          }
+        ],
+        "response_selector": {
+          "all_retrieval_intents": [],
+          "default": {
+            "response": {
+              "id": null,
+              "response_templates": null,
+              "confidence": 0,
+              "intent_response_key": null,
+              "template_name": "utter_None"
+            },
+            "ranking": []
+          }
+        }
+      },
+      "input_channel": "socketio",
+      "message_id": "46ad88936cf548da948c816778c35837",
+      "metadata": {}
+    },
+    {
+      "event": "slot",
+      "timestamp": 1609306356.9447198,
+      "name": "time",
+      "value": "2021-02-28T00:00:00.000+00:00"
+    },
+    {
+      "event": "user_featurization",
+      "timestamp": 1609306356.956853,
+      "use_text_for_featurization": false
+    },
+    {
+      "event": "action",
+      "timestamp": 1609306356.956863,
+      "name": "new_mission_form",
+      "policy": "policy_0_RulePolicy",
+      "confidence": 1,
+      "action_text": null
+    },
+    {
+      "event": "slot",
+      "timestamp": 1609306356.956872,
+      "name": "time",
+      "value": "2021-02-28T00:00:00.000+00:00"
+    },
+    {
+      "event": "slot",
+      "timestamp": 1609306356.956876,
+      "name": "requested_slot",
+      "value": null
+    },
+    { "event": "active_loop", "timestamp": 1609306356.9568782, "name": null },
+    {
+      "event": "action",
+      "timestamp": 1609306356.980882,
+      "name": "action_get_time_from_text",
+      "policy": "policy_0_RulePolicy",
+      "confidence": 1,
+      "action_text": null
+    },
+    {
+      "event": "slot",
+      "timestamp": 1609306356.980899,
+      "name": "actual_time",
+      "value": "2021-02-28T00:00:00.000-06:00"
+    },
+    {
+      "event": "action",
+      "timestamp": 1609306357.0174232,
+      "name": "action_save_mission",
+      "policy": "policy_0_RulePolicy",
+      "confidence": 1,
+      "action_text": null
+    },
+    {
+      "event": "bot",
+      "timestamp": 1609306357.017474,
+      "text": "Perfect. Just saved your mission \"Fuck Adam\" for Feb 28, 2021, 12:00 AM",
+      "data": {
+        "elements": null,
+        "quick_replies": null,
+        "buttons": null,
+        "attachment": null,
+        "image": null,
+        "custom": null
+      },
+      "metadata": {}
+    },
+    {
+      "event": "action",
+      "timestamp": 1609306357.0343602,
+      "name": "action_reset_time",
+      "policy": "policy_0_RulePolicy",
+      "confidence": 1,
+      "action_text": null
+    },
+    {
+      "event": "slot",
+      "timestamp": 1609306357.0343769,
+      "name": "time",
+      "value": null
+    },
+    {
+      "event": "followup",
+      "timestamp": 1609306357.0343838,
+      "name": "action_new_user_goal"
+    },
+    {
+      "event": "action",
+      "timestamp": 1609306357.040321,
+      "name": "action_new_user_goal",
+      "policy": "followup_action",
+      "confidence": 1,
+      "action_text": null
+    },
+    {
+      "event": "bot",
+      "timestamp": 1609306357.0403829,
+      "text": "A good way to keep track of your mission is by setting subgoals",
+      "data": {
+        "elements": null,
+        "quick_replies": null,
+        "buttons": null,
+        "attachment": null,
+        "image": null,
+        "custom": null
+      },
+      "metadata": {}
+    },
+    {
+      "event": "bot",
+      "timestamp": 1609306357.040389,
+      "text": "That way, you know you’re getting closer to achieving it",
+      "data": {
+        "elements": null,
+        "quick_replies": null,
+        "buttons": null,
+        "attachment": null,
+        "image": null,
+        "custom": null
+      },
+      "metadata": {}
+    },
+    {
+      "event": "action",
+      "timestamp": 1609306357.0547142,
+      "name": "record_motivation_form",
+      "policy": "policy_1_TEDPolicy",
+      "confidence": 0.9431490898132324,
+      "action_text": null
+    },
+    {
+      "event": "active_loop",
+      "timestamp": 1609306357.054801,
+      "name": "record_motivation_form"
+    },
+    {
+      "event": "slot",
+      "timestamp": 1609306357.05481,
+      "name": "requested_slot",
+      "value": "number"
+    },
+    {
+      "event": "bot",
+      "timestamp": 1609306357.0548139,
+      "metadata": {
+        "template_name": "utter_ask_record_motivation_form_number"
+      },
+      "text": "On a scale of 1-10, how motivated do you feel?",
+      "data": {
+        "elements": null,
+        "quick_replies": null,
+        "buttons": null,
+        "attachment": null,
+        "image": null,
+        "custom": null
+      }
+    },
+    {
+      "event": "action",
+      "timestamp": 1609306357.068248,
+      "name": "action_listen",
+      "policy": "policy_0_RulePolicy",
+      "confidence": 1,
+      "action_text": null
+    }
+  ],
+  "followup_action": null,
+  "latest_action": { "action_name": "action_listen" },
+  "latest_action_name": "action_listen",
+  "latest_event_time": 1609306357.068248,
+  "latest_input_channel": "socketio",
+  "latest_message": {
+    "intent": {
+      "id": { "$numberLong": "-1030662672901839534" },
+      "name": "goodbye",
+      "confidence": 0.5972132086753845
+    },
+    "entities": [
+      {
+        "start": 0,
+        "end": 17,
+        "text": "2 months from now",
+        "value": "2021-02-28T00:00:00.000+00:00",
+        "confidence": 1,
+        "additional_info": {
+          "values": [
+            {
+              "value": "2021-02-28T00:00:00.000+00:00",
+              "grain": "day",
+              "type": "value"
+            }
+          ],
+          "value": "2021-02-28T00:00:00.000+00:00",
+          "grain": "day",
+          "type": "value"
+        },
+        "entity": "time",
+        "extractor": "DucklingEntityExtractor"
+      }
+    ],
+    "text": "2 months from now",
+    "message_id": "46ad88936cf548da948c816778c35837",
+    "metadata": {},
+    "intent_ranking": [
+      {
+        "id": { "$numberLong": "-1030662672901839534" },
+        "name": "goodbye",
+        "confidence": 0.5972132086753845
+      },
+      {
+        "id": { "$numberLong": "-2503062070315642906" },
+        "name": "mood_great",
+        "confidence": 0.17613397538661957
+      },
+      {
+        "id": { "$numberLong": "-3477967296953446960" },
+        "name": "bot_challenge",
+        "confidence": 0.11104792356491089
+      },
+      {
+        "id": { "$numberLong": "-3340609542777257312" },
+        "name": "inform",
+        "confidence": 0.04301757737994194
+      },
+      {
+        "id": { "$numberLong": "-6750676784152633216" },
+        "name": "motivational_quote",
+        "confidence": 0.017580771818757057
+      },
+      {
+        "id": { "$numberLong": "-3498994587077189871" },
+        "name": "set_info",
+        "confidence": 0.01684841513633728
+      },
+      {
+        "id": { "$numberLong": "2999275571798071513" },
+        "name": "new_user",
+        "confidence": 0.012428809888660908
+      },
+      {
+        "id": { "$numberLong": "-8746748015637839853" },
+        "name": "affirm",
+        "confidence": 0.011739763431251049
+      },
+      {
+        "id": { "$numberLong": "-6794647037503095708" },
+        "name": "deny",
+        "confidence": 0.011550375260412693
+      },
+      {
+        "id": { "$numberLong": "2714337960507359639" },
+        "name": "mood_unhappy",
+        "confidence": 0.00243920786306262
+      }
+    ],
+    "response_selector": {
+      "all_retrieval_intents": [],
+      "default": {
+        "response": {
+          "id": null,
+          "response_templates": null,
+          "confidence": 0,
+          "intent_response_key": null,
+          "template_name": "utter_None"
+        },
+        "ranking": []
+      }
+    }
+  },
+  "paused": false,
+  "slots": {
+    "goal": null,
+    "mission": "Fuck Adam",
+    "user_name": "lila",
+    "user_email": "lila@gmail.com",
+    "goal_habit": null,
+    "goal_task": null,
+    "time": null,
+    "actual_time": "2021-02-28T00:00:00.000-06:00",
+    "number": null,
+    "motivation_num": null,
+    "actions_today": null,
+    "requested_slot": "number"
+  }
+}

@@ -1,8 +1,14 @@
 const mongoose = require("mongoose");
 
 const moodSchema = new mongoose.Schema({
-  description: String,
-  moodRating: Number,
+  description: {
+    type: String,
+    required: [true, "Mood must have a description"],
+  },
+  moodRating: {
+    type: Number,
+    required: [true, "Mood must have a rating"],
+  },
   dateCreated: {
     type: Date,
     default: Date.now,
