@@ -5,9 +5,15 @@ const moodSchema = new mongoose.Schema({
     type: String,
     required: [true, "Mood must have a description"],
   },
-  moodRating: {
+  sentiment: {
     type: Number,
     required: [true, "Mood must have a rating"],
+    validate: {
+      validator: function(val) {
+        // between -1 and 1, inclusive
+        return val <= 1 && val >= -1;
+      },
+    },
   },
   dateCreated: {
     type: Date,
@@ -17,7 +23,7 @@ const moodSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  _user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
-export const Mood = mongoose.model("Mood", moodSchema);
+module.exports = moodSchema;

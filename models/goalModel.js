@@ -14,9 +14,10 @@ const goalSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  // not needed for habits
   dateEnd: {
     type: Date,
-    required: [true, "Goal must have an end date"],
+    // required: [true, "Goal must have an end date"],
   },
   description: {
     type: String,
@@ -34,7 +35,7 @@ const goalSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Mission",
   },
-  _user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
 module.exports = goalSchema;

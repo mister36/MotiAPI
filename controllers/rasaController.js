@@ -6,6 +6,7 @@ const { motiConn } = require("../dbConnection");
 const goalSchema = require("../models/goalModel");
 const missionSchema = require("../models/missionModel");
 const userSchema = require("../models/userModel");
+const moodSchema = require("../models/moodModel");
 
 const quotes = require("../static_files/quotes.json");
 // const fs = require("fs");
@@ -13,8 +14,11 @@ const quotes = require("../static_files/quotes.json");
 const User = motiConn.model("User", userSchema);
 const Goal = motiConn.model("Goal", goalSchema);
 const Mission = motiConn.model("Mission", missionSchema);
+const Mood = motiConn.model("Mood", moodSchema);
 
-// returns random item from array
+/**
+ *Returns random item from array
+ */
 const randArrayElem = (list = []) => {
   return list[_.random(list.length - 1)];
 };
@@ -152,6 +156,7 @@ exports.action = async (req, res, next) => {
         // if user was new, set user.new to false in database
         if (slots.user_is_new) {
           await User.findByIdAndUpdate(slots.user_id, { new: false });
+          event("slot", "user_is_new", false);
         }
 
         // console.log(mission);
@@ -174,21 +179,95 @@ exports.action = async (req, res, next) => {
     // SECTION: New goal form
 
     case "validate_new_goal_form":
-      console.log("RUNNING VALIDATE");
-      // If the "time" slot is null, yet somehow goal_end isn't,
+      // if user is new, set goal type to task
+      // (Just to make things easier)
+      if (slots.user_is_new && !slots.goal) {
+        event("slot", "goal_type", "task");
+      }
+      // If the "time" slot is null, yet somehow goal_end has a value,
       // remove the value in goal_end
+      // Solves problem which occurred in new user flow
       if (!slots.time && slots.goal_end) {
         event("slot", "goal_end", null);
       }
+
+      // if the extracted goal type text includes every,
+      // set "goal_type" to habit, otherwise task
+      //  TODO: Will fix this for more flexibility
+      if (slots.goal_type) {
+        if (
+          (slots.goal_type.includes("every") && !slots.goal_end) ||
+          slots.goal_type.includes("habit")
+        ) {
+          event("slot", "goal_type", "habit");
+        } else {
+          event("slot", "goal_type", "task");
+        }
+      }
+
       send(resPayload);
 
       break;
 
-    case "action_save_goal":
-      // TODO: Save the goal into database (use "actual_time", not "time"!!!)
+    case "action_ask_new_goal_form_goal":
+      if (slots.user_is_new) {
+        // TODO: Have this response for creating a new mission as well
+        response(
+          "Now, what’s one thing you can do that will help you reach your mission?"
+        );
+      } else {
+        response("I like your thinking. What goal would you like to add?");
+      }
 
-      response(`Do you feel that ${name}? You’re already one step closer.🔥`);
       send(resPayload);
+      break;
+
+    // case "action_ask_new_goal_form_goal_type":
+    //  response("Every day, or just one time?")
+
+    //   send(resPayload);
+    //   break;
+
+    case "action_ask_new_goal_form_goal_end":
+      if (slots.goal_type === "habit") {
+        response("What time will you do it?");
+      } else {
+        response("When will you complete it?");
+      }
+
+      send(resPayload);
+      break;
+
+    case "action_save_goal":
+      //   const final = {
+      //     description: slots.goal,
+      //     dateEnd: slots.actual_time,
+      //     type: slots.goal_type,
+      //     timeRepeat: slots.goal_type === "habit" ? slots.actual_time : null,
+      //   };
+      const timeRepeat = DateTime.fromISO(slots.actual_time).toLocaleString(
+        DateTime.TIME_24_SIMPLE
+      );
+      // TODO: Add mission goal belongs to
+      try {
+        const goal = await Goal.create({
+          description: slots.goal,
+          dateEnd: slots.goal_type === "habit" ? null : slots.goal_end,
+          type: slots.goal_type,
+          timeRepeat: slots.goal_type === "habit" ? timeRepeat : null,
+          userId: slots.user_id,
+        });
+
+        response(`Do you feel that ${name}? You’re already one step closer.🔥`);
+        event("slot", "goal", null);
+        event("slot", "goal_end", null);
+        event("slot", "goal_type", null);
+        console.log(goal);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        send(resPayload);
+      }
 
       break;
 
@@ -230,8 +309,18 @@ exports.action = async (req, res, next) => {
       break;
 
     case "action_save_mood":
-      // TODO: Save mood in database
       sentiment = slots.sentiment_for_form;
+
+      try {
+        await Mood.create({
+          description: slots.mood_reason,
+          sentiment,
+          userId: slots.user_id,
+        });
+      } catch (error) {
+        console.log(error);
+        return send(resPayload);
+      }
 
       if (sentiment > 0.05) {
         response("That does sound nice. I’ll add that to your MotiMoods.");
@@ -270,7 +359,7 @@ exports.action = async (req, res, next) => {
     // SECTION: Quote
     case "action_grab_quote":
       // picks random quote
-      const randomQuoteObj = quotes[_.random(0, quotes.length)];
+      const randomQuoteObj = randArrayElem(quotes);
       resPayload.responses.push({
         text: `"${randomQuoteObj.text}" - ${randomQuoteObj.author}`,
       });
