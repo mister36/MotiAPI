@@ -31,21 +31,18 @@ const wsApp = uWS
       console.log("WebSocket connection established");
 
       const rasaWs = new WebSocket(
-        "ws://192.168.1.72:5005/webhooks/websockets/",
-        {
-          path: "/websocket/websocket",
-        }
+        "ws://192.168.1.72:5005/webhooks/websockets/websocket"
       );
 
       rasaWs.on("open", () => {
-        // rasaWs.emit("session_request", { session_id: "23krjf2rfs" });
-        // rasaWs.emit("user_message", {
-        //   message: "hello moti",
-        //   session_id: "23krjf2rfs",
-        // });
-        // rasaWs.send()
-        // rasaWs.send(JSON.stringify({ message: "hello" }));
-        console.log("CONNECTED TO RASA");
+        rasaWs.send(
+          JSON.stringify({
+            event: "session_request",
+            data: {
+              message: "new_id",
+            },
+          })
+        );
       });
       rasaWs.on("message", (data) => {
         console.log("Rasa got a message");
@@ -58,8 +55,9 @@ const wsApp = uWS
     },
     message: (ws, message, isBinary) => {
       // TODO: Send messages to RASA
-      console.log("received message");
-      console.log(message);
+      // TODO: Uncomment this
+      // console.log("received message");
+      // console.log(message);
       ws.send(message, isBinary);
     },
     close: (ws, code, message) => {
