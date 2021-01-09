@@ -1,8 +1,12 @@
 // Imports
 // source ./venv/bin/activate
+const { performance } = require("perf_hooks");
 
 const WebSocket = require("ws");
 const dotenv = require("dotenv");
+const arrbuffstr = require("arrbuffstr");
+const str2ab = require("string-to-arraybuffer");
+const ab2str = require("arraybuffer-to-string");
 const jwt = require("jsonwebtoken");
 const userSchema = require("./models/userModel");
 const { motiConn, chatbotConn } = require("./dbConnection");
@@ -11,63 +15,115 @@ const User = motiConn.model("User", userSchema);
 
 // Environment variables
 dotenv.config({ path: `${__dirname}/config.env` });
-const port = process.env.PORT;
+const httpPort = process.env.HTTP_PORT;
+const wsPort = process.env.WS_PORT;
 
 // Express app
 const app = require("./app");
 
+// TODO: Remove
+// TODO: IMPLEMENT BINARY TRANSFER
+let t0;
+let t1;
+
 // Create server
 const server = require("http").createServer(app);
-const io = require("socket.io")(server);
 
 const uWS = require("uWebSockets.js");
+
+let rasaWs;
+
+const id = "other-3";
 
 const wsApp = uWS
   .App()
   .ws("/*", {
     compression: uWS.SHARED_COMPRESSOR,
     maxPayloadLength: 16 * 1024 * 1024,
+    maxBackpressure: 1024,
     open: (ws) => {
       console.log("WebSocket connection established");
 
-      const rasaWs = new WebSocket(
+      // // TODO: Reconnection
+      rasaWs = new WebSocket(
         "ws://192.168.1.72:5005/webhooks/websockets/websocket"
       );
 
       rasaWs.on("open", () => {
-        rasaWs.send(
-          JSON.stringify({
-            event: "session_request",
-            data: {
-              message: "new_id",
-            },
-          })
-        );
+        // Sends a session request
+        // TODO: Add id field like socket.io on each message
+        const data = JSON.stringify({
+          event: "session_request",
+          data: {
+            client_id: id,
+          },
+        });
+
+        if (rasaWs.readyState === WebSocket.OPEN) {
+          rasaWs.send(str2ab(data), { binary: true }, (err) => {
+            if (err) console.log(err);
+          });
+        }
       });
       rasaWs.on("message", (data) => {
-        console.log("Rasa got a message");
-        console.log(data);
+        const message = JSON.parse(ab2str(data));
+        // TODO: Better destructuring
+        const { event } = message;
+
+        switch (event) {
+          case "connection":
+            break;
+          case "session_accepted":
+            break;
+          case "bot_message":
+            t1 = performance.now();
+            console.log(`took ${t1 - t0} milliseconds`);
+
+            const response = str2ab(JSON.stringify(message.data));
+
+            ws.send(response, true);
+            break;
+          default:
+            console.log(`Unknown event ${event}`);
+        }
       });
       rasaWs.on("error", (err) => {
         console.log("error");
         console.log(err);
       });
+
+      rasaWs.on("close", (code, reason) => {
+        console.log("Rasa connection closed");
+        console.log(reason);
+      });
     },
     message: (ws, message, isBinary) => {
-      // TODO: Send messages to RASA
-      // TODO: Uncomment this
-      // console.log("received message");
-      // console.log(message);
-      ws.send(message, isBinary);
+      const strMessage = ab2str(message);
+      const data = JSON.stringify({
+        event: "user_message",
+        data: {
+          message: strMessage,
+          client_id: id,
+        },
+      });
+
+      if (rasaWs.readyState === WebSocket.OPEN) {
+        rasaWs.send(str2ab(data), { binary: isBinary });
+      }
+
+      t0 = performance.now();
     },
     close: (ws, code, message) => {
-      console.log("Websocket connection closed");
-      // ws.send()
+      console.log(`Websocket connection closed with code ${code}`);
+      rasaWs.close();
+    },
+    drain: (ws) => {
+      console.log(`Backpressure: ${ws.getBufferedAmount()}`);
     },
   })
-  .listen(parseInt(port, 10), (listenSocket) => {
+  .listen(parseInt(wsPort, 10), (listenSocket) => {
     if (listenSocket) {
-      console.log(`Websocket listening on port ${port}`);
+      console.log(`Websocket listening on port ${wsPort}`);
     }
   });
 
@@ -176,6 +232,6 @@ const wsApp = uWS
 //   });
 // });
 
-// server.listen(port, () => {
-//   console.log(`Moti server running on port ${port}`);
-// });
+server.listen(httpPort, () => {
+  console.log(`HTTP server running on port ${httpPort}`);
+});

@@ -239,12 +239,6 @@ exports.action = async (req, res, next) => {
       break;
 
     case "action_save_goal":
-      //   const final = {
-      //     description: slots.goal,
-      //     dateEnd: slots.actual_time,
-      //     type: slots.goal_type,
-      //     timeRepeat: slots.goal_type === "habit" ? slots.actual_time : null,
-      //   };
       const timeRepeat = DateTime.fromISO(slots.actual_time).toLocaleString(
         DateTime.TIME_24_SIMPLE
       );
