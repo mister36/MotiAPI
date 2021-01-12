@@ -4,8 +4,6 @@ const { performance } = require("perf_hooks");
 
 const WebSocket = require("ws");
 const dotenv = require("dotenv");
-const arrbuffstr = require("arrbuffstr");
-const str2ab = require("string-to-arraybuffer");
 const ab2str = require("arraybuffer-to-string");
 const jwt = require("jsonwebtoken");
 const userSchema = require("./models/userModel");
@@ -22,7 +20,6 @@ const wsPort = process.env.WS_PORT;
 const app = require("./app");
 
 // TODO: Remove
-// TODO: IMPLEMENT BINARY TRANSFER
 let t0;
 let t1;
 
@@ -33,12 +30,12 @@ const uWS = require("uWebSockets.js");
 
 let rasaWs;
 
-const id = "other-3";
+const id = "o4few6";
 
 const wsApp = uWS
   .App()
   .ws("/*", {
-    compression: uWS.SHARED_COMPRESSOR,
+    compression: uWS.DISABLED,
     maxPayloadLength: 16 * 1024 * 1024,
     maxBackpressure: 1024,
     open: (ws) => {
@@ -60,13 +57,13 @@ const wsApp = uWS
         });
 
         if (rasaWs.readyState === WebSocket.OPEN) {
-          rasaWs.send(str2ab(data), { binary: true }, (err) => {
+          rasaWs.send(data, null, (err) => {
             if (err) console.log(err);
           });
         }
       });
       rasaWs.on("message", (data) => {
-        const message = JSON.parse(ab2str(data));
+        const message = JSON.parse(data);
         // TODO: Better destructuring
         const { event } = message;
 
@@ -78,10 +75,8 @@ const wsApp = uWS
           case "bot_message":
             t1 = performance.now();
             console.log(`took ${t1 - t0} milliseconds`);
-
-            const response = str2ab(JSON.stringify(message.data));
-
-            ws.send(response, true);
+            const response = JSON.stringify(message.data);
+            ws.send(response);
             break;
           default:
             console.log(`Unknown event ${event}`);
@@ -98,17 +93,16 @@ const wsApp = uWS
       });
     },
     message: (ws, message, isBinary) => {
-      const strMessage = ab2str(message);
       const data = JSON.stringify({
         event: "user_message",
         data: {
-          message: strMessage,
+          message: ab2str(message),
           client_id: id,
         },
       });
 
       if (rasaWs.readyState === WebSocket.OPEN) {
-        rasaWs.send(str2ab(data), { binary: isBinary });
+        rasaWs.send(data);
       }
 
       t0 = performance.now();

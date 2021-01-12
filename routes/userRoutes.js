@@ -7,4 +7,6 @@ router.route("/signup").post(userController.signUp);
 
 router.route("/login").post(userController.login);
 
+router.route("/token").post(userController.refreshToken);
+
 module.exports = router;
