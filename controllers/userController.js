@@ -20,7 +20,7 @@ exports.signUp = async (req, res, next) => {
       password,
     });
 
-    const data = { name, email };
+    const data = { name, email, id: user._id, isNew: user.new };
 
     // Creates tokens
     const accessToken = signToken(data, "5 days");
@@ -61,7 +61,7 @@ exports.login = async (req, res, next) => {
     if (!correctPassword) {
       throw new Error("Incorrect email or password");
     } else {
-      const data = { name: user.name, email };
+      const data = { name: user.name, email, id: user._id, isNew: user.new };
 
       // Creates tokens
       const accessToken = signToken(data, "5 days");

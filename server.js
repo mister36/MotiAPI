@@ -3,6 +3,7 @@
 const { performance } = require("perf_hooks");
 
 const WebSocket = require("ws");
+const uWS = require("uWebSockets.js");
 const dotenv = require("dotenv");
 const ab2str = require("arraybuffer-to-string");
 const jwt = require("jsonwebtoken");
@@ -26,15 +27,13 @@ let t1;
 // Create server
 const server = require("http").createServer(app);
 
-const uWS = require("uWebSockets.js");
-
 let rasaWs;
 
-const id = "o4few6";
+const id = "gotanother";
 
 const wsApp = uWS
   .App()
-  .ws("/*", {
+  .ws("/chat", {
     compression: uWS.DISABLED,
     maxPayloadLength: 16 * 1024 * 1024,
     maxBackpressure: 1024,
@@ -93,16 +92,54 @@ const wsApp = uWS
       });
     },
     message: (ws, message, isBinary) => {
-      const data = JSON.stringify({
-        event: "user_message",
-        data: {
-          message: ab2str(message),
-          client_id: id,
-        },
-      });
+      // TODO: Check if user is new
+      // arraybuffer to string
+      const decodedMessage = JSON.parse(ab2str(message));
 
-      if (rasaWs.readyState === WebSocket.OPEN) {
-        rasaWs.send(data);
+      // {event: 'auth', data: {message: jwt}}
+      if (decodedMessage.event === "auth") {
+        // NOTE: Might throw error
+
+        try {
+          const token = jwt.verify(
+            decodedMessage.data.message,
+            process.env.JWT_SECRET
+          );
+
+          if (rasaWs.readyState === WebSocket.OPEN) {
+            // uses info from token to set user data in rasa
+            rasaWs.send(
+              JSON.stringify({
+                event: "user_message",
+                data: {
+                  message:
+                    "/EXTERNAL_set_info" +
+                    JSON.stringify({
+                      user_name: token.name,
+                      user_email: token.email,
+                      user_id: token.mongoId,
+                      user_is_new: token.isNew,
+                    }),
+                  client_id: id,
+                },
+              })
+            );
+          }
+        } catch (error) {
+          return console.log(error);
+        }
+      } else if (decodedMessage.event === "user_message") {
+        const data = JSON.stringify({
+          event: "user_message",
+          data: {
+            message: decodedMessage.data.message,
+            client_id: id,
+          },
+        });
+
+        if (rasaWs.readyState === WebSocket.OPEN) {
+          rasaWs.send(data);
+        }
       }
 
       t0 = performance.now();
