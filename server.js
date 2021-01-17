@@ -23,7 +23,8 @@ const app = require("./app");
 // Create server
 const server = require("http").createServer(app);
 
-const id = "will-change-man2";
+// TODO: Unique id for each user; after certain amount of time, change
+const id = "will-change-man3";
 
 const wsApp = uWS
   .App()
@@ -53,32 +54,26 @@ const wsApp = uWS
 
             ws.email = token.email;
             ws.subscribe("rasa/user/" + token.email); // e.g, rasa/adam@gmail.com
-            // TODO: Session request
-            // attaches rasa websocket
-            // ws.rasa = new WebSocket(
-            //   "ws://192.168.1.72:5005/webhooks/websockets/websocket"
-            // );
             // // sets info in rasa
-            // ws.rasa.send(
-            //   JSON.stringify({
-            //     event: "user_message",
-            //     data: {
-            //       message:
-            //         "/EXTERNAL_set_info" +
-            //         JSON.stringify({
-            //           user_name: token.name,
-            //           user_email: token.email,
-            //           user_id: token.mongoId,
-            //           user_is_new: token.isNew,
-            //         }),
-            //       client_id: "skfsf",
-            //     },
-            //   })
-            // );
+            ws.publish(
+              "rasa/message",
+              JSON.stringify({
+                event: "user_message",
+                data: {
+                  message:
+                    "/EXTERNAL_set_info" +
+                    JSON.stringify({
+                      user_name: token.name,
+                      user_email: token.email,
+                      user_id: token.mongoId,
+                      user_is_new: token.isNew,
+                    }),
+                  client_id: id,
+                  email: ws.email,
+                },
+              })
+            );
 
-            // ws.rasa.on("message", (data) => {
-            //   ws.publish("");
-            // });
             console.log("websocket subscribed");
           } catch (error) {
             console.log(error);
