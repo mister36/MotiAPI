@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.route("/webhook").post(rasaController.action);
 
-router.route("/test").post(rasaController.testTime);
+router.route("/test").post(rasaController.test);
 
 module.exports = router;

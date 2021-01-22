@@ -14,26 +14,26 @@ const motiConn = mongoose.createConnection(
     useUnifiedTopology: true,
     useCreateIndex: true,
     useFindAndModify: false,
-    poolSize: 10,
+    poolSize: 5,
   }
 );
 
-const chatbotConn = mongoose.createConnection(
-  `mongodb+srv://motiapp:${mongoPass}@moti1.piqgh.mongodb.net/${mongoDBChat}?retryWrites=true&w=majority`,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    poolSize: 10,
-  }
-);
+// const chatbotConn = mongoose.createConnection(
+//   `mongodb+srv://motiapp:${mongoPass}@moti1.piqgh.mongodb.net/${mongoDBChat}?retryWrites=true&w=majority`,
+//   {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//     useCreateIndex: true,
+//     useFindAndModify: false,
+//     poolSize: 10,
+//   }
+// );
 
-Promise.all([motiConn, chatbotConn])
+Promise.all([motiConn /*chatbotConn */])
   .then(() => {
-    console.log("Connected to both databases");
+    console.log("Connected to database");
   })
   .catch((err) => console.log("error: ", err));
 
 exports.motiConn = motiConn;
-exports.chatbotConn = chatbotConn;
+// exports.chatbotConn = chatbotConn;

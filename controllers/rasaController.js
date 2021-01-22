@@ -35,7 +35,11 @@ exports.testTime = (req, res, next) => {
 exports.test = async (req, res, next) => {
   try {
     const response = await parseTime(
-      "my mission is to travel to the moon at 12:45am",
+      "/info" +
+        JSON.stringify({
+          mission: "go to the moon forever",
+          time: "January 25",
+        }),
       1608790764096.599 * 1000,
       "America/Chicago"
     );
@@ -101,12 +105,12 @@ exports.action = async (req, res, next) => {
   /**
    * Sends response to Rasa
    */
-  const response = (text) => {
-    // checks if "text" string is an image
-    if (text.includes("png") || text.includes("jpg")) {
-      return resPayload.responses.push({ image: text });
-    }
+  const text = (text) => {
     resPayload.responses.push({ text });
+  };
+
+  const image = (url) => {
+    resPayload.responses.push({ image: url });
   };
 
   switch (next_action) {
@@ -117,10 +121,11 @@ exports.action = async (req, res, next) => {
         "Welcome to Motisesh! My name is Moti.",
         "We’ll start by making a mission",
         "Think of a mission as a super important goal that you’d like to accomplish. It shouldn’t be too easy, but it shouldn’t be too challenging",
+        `So ${slots.user_name}, tell me what your mission is???`,
       ];
 
       texts.forEach((val) => {
-        response(val);
+        text(val);
       });
 
       send(resPayload);
@@ -133,7 +138,7 @@ exports.action = async (req, res, next) => {
       ];
       // TODO: Write function that adds all responses to resPayload(if needed)
       texts.forEach((val) => {
-        response(val);
+        text(val);
       });
 
       send(resPayload);
@@ -153,15 +158,9 @@ exports.action = async (req, res, next) => {
           userId: slots.user_id,
         });
 
-        // if user was new, set user.new to false in database
-        if (slots.user_is_new) {
-          await User.findByIdAndUpdate(slots.user_id, { new: false });
-          event("slot", "user_is_new", false);
-        }
-
         // console.log(mission);
 
-        response(
+        text(
           `Perfect. Just saved your mission "${
             slots.mission
           }" for ${DateTime.fromISO(slots.actual_time).toLocaleString(
@@ -212,27 +211,21 @@ exports.action = async (req, res, next) => {
     case "action_ask_new_goal_form_goal":
       if (slots.user_is_new) {
         // TODO: Have this response for creating a new mission as well
-        response(
+        text(
           "Now, what’s one thing you can do that will help you reach your mission?"
         );
       } else {
-        response("I like your thinking. What goal would you like to add?");
+        text("I like your thinking. What goal would you like to add?");
       }
 
       send(resPayload);
       break;
 
-    // case "action_ask_new_goal_form_goal_type":
-    //  response("Every day, or just one time?")
-
-    //   send(resPayload);
-    //   break;
-
     case "action_ask_new_goal_form_goal_end":
       if (slots.goal_type === "habit") {
-        response("What time will you do it?");
+        text("What time will you do it?");
       } else {
-        response("When will you complete it?");
+        text("When will you complete it?");
       }
 
       send(resPayload);
@@ -242,17 +235,31 @@ exports.action = async (req, res, next) => {
       const timeRepeat = DateTime.fromISO(slots.actual_time).toLocaleString(
         DateTime.TIME_24_SIMPLE
       );
-      // TODO: Add mission goal belongs to
       try {
+        // TODO: optimize later
+        // mission id will be placed in goal for virtual populate
+        const mission = await Mission.findOne({
+          userId: slots.user_id,
+          completed: false,
+        });
+
+        // creates goal
         const goal = await Goal.create({
           description: slots.goal,
           dateEnd: slots.goal_type === "habit" ? null : slots.goal_end,
           type: slots.goal_type,
           timeRepeat: slots.goal_type === "habit" ? timeRepeat : null,
           userId: slots.user_id,
+          mission: mission._id,
         });
 
-        response(`Do you feel that ${name}? You’re already one step closer.🔥`);
+        // if user was new, set user.new to false in database
+        if (slots.user_is_new) {
+          await User.findByIdAndUpdate(slots.user_id, { new: false });
+          event("slot", "user_is_new", false);
+        }
+
+        text(`Do you feel that ${name}? You’re already one step closer.🔥`);
         event("slot", "goal", null);
         event("slot", "goal_end", null);
         event("slot", "goal_type", null);
@@ -269,6 +276,7 @@ exports.action = async (req, res, next) => {
     case "action_reset_time":
       // All the time related slots
       event("slot", "time", null);
+      event("slot", "word_time", null);
       event("slot", "actual_time", null);
       event("slot", "mission_end", null);
       event("slot", "goal_end", null);
@@ -292,11 +300,11 @@ exports.action = async (req, res, next) => {
       sentiment = slots.sentiment;
 
       if (sentiment > 0.05) {
-        response("That’s awesome💯. What’s making you feel so good?");
+        text("That’s awesome💯. What’s making you feel so good?");
       } else if (sentiment < -0.05) {
-        response("Sorry to hear that. Why do you feel bad?");
+        text("Sorry to hear that. Why do you feel bad?");
       } else {
-        response("What have you done recently?");
+        text("What have you done recently?");
       }
 
       send(resPayload);
@@ -317,7 +325,7 @@ exports.action = async (req, res, next) => {
       }
 
       if (sentiment > 0.05) {
-        response("That does sound nice. I’ll add that to your MotiMoods.");
+        text("That does sound nice. I’ll add that to your MotiMoods.");
       } else {
         event("followup", "action_improve_mood", undefined);
       }
@@ -334,16 +342,16 @@ exports.action = async (req, res, next) => {
       // TODO: Add more ways to improve mood
       // Sets the slot which tells how bot will try to cheer user up with
       event("slot", "improve_mood_with", "fruit");
-      response(
+      text(
         "Eating fruit is a quick way to improve your mood. Got any of these?"
       );
-      response(
+      image(
         "https://hos-kitchenwares.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/0/3/03030.00rd00001.jpg"
       );
-      response(
+      image(
         "https://www.boeschbodenspies.com/wp-content/uploads/2017/08/orange.png"
       );
-      response(
+      image(
         "https://toppng.com/uploads/preview/banana-1152834568854jqhpqhvq.png"
       );
 
@@ -360,40 +368,6 @@ exports.action = async (req, res, next) => {
 
       // send payload
       send(resPayload);
-      break;
-
-    case "action_goal_created":
-      const { goal, actual_time } = slots;
-      console.log("ACTUAL TIME: ", actual_time);
-
-      for (slot in slots) {
-        // checks if slot is a goal_ and has a value
-        if (
-          ["goal_mission", "goal_habit", "goal_task"].includes(slot) &&
-          slots[slot]
-        ) {
-          try {
-            await Goal.create({
-              type: slot.slice(5), // slices "goal_"
-              dateEnd: actual_time,
-              description: goal,
-            });
-
-            resPayload.responses.push({
-              text: `Saved "${goal}" to your MotiGoals`,
-            });
-            send(resPayload, 201);
-          } catch (error) {
-            console.log(error);
-
-            resPayload.responses.push({
-              text: "Uh oh, something went wrong. Can you try again?",
-            });
-            send(resPayload, 400);
-          }
-          break;
-        }
-      }
       break;
 
     case "action_ask_create_goal_form_time":
@@ -438,8 +412,6 @@ exports.action = async (req, res, next) => {
     case "action_get_time_from_text":
       // parses latest message for time,
       // along with reference time for relative terms (e.g, "tomorrow")
-      //   console.log("latest message: ", latest_message_text);
-      //   console.log("latest_time: ", latest_time);
 
       try {
         const timeResponse = await parseTime(
@@ -462,6 +434,29 @@ exports.action = async (req, res, next) => {
         send(resPayload, 400);
       }
 
+      break;
+
+    case "action_get_time_from_words":
+      try {
+        const timeResponse = await parseTime(
+          slots.word_time,
+          latest_time * 1000,
+          "America/Chicago"
+        );
+
+        // only if there were any extracted times
+        if (timeResponse.length > 0) {
+          // perhaps in the future, store all extracted times
+          // in an array and set "actual_time" slot with that
+          const firstExtractedTime = timeResponse[0].value.value;
+
+          event("slot", "actual_time", firstExtractedTime);
+        }
+        send(resPayload);
+      } catch (error) {
+        console.log(error);
+        send(resPayload, 400);
+      }
       break;
     default:
       console.log("WRONG ACTION /////////////////////////");

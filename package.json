@@ -35,8 +35,6 @@
     "node-id3": "^0.1.17",
     "node-pushnotifications": "^1.5.0",
     "nodejs-formaction-sdk-rasa": "^1.1.0",
-    "socket.io": "^3.0.4",
-    "socket.io-client": "^2.3.1",
     "string-to-arraybuffer": "^1.0.2",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v18.12.0",
     "validator": "^10.11.0",

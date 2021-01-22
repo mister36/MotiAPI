@@ -23,7 +23,6 @@ const missionSchema = new mongoose.Schema({
   },
 
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  goals: [{ type: mongoose.Schema.Types.ObjectId, ref: "Goal" }],
 });
 
 module.exports = missionSchema;
