@@ -103,14 +103,24 @@ exports.action = async (req, res, next) => {
   };
 
   /**
-   * Sends response to Rasa
+   * Sends text to Rasa
    */
   const text = (text) => {
     resPayload.responses.push({ text });
   };
 
+  /**
+   * Sends image to Rasa
+   */
   const image = (url) => {
     resPayload.responses.push({ image: url });
+  };
+
+  /**
+   * Sends custom info to Rasa
+   */
+  const custom = (obj) => {
+    resPayload.responses.push({ custom: obj });
   };
 
   switch (next_action) {
@@ -121,7 +131,6 @@ exports.action = async (req, res, next) => {
         "Welcome to Motisesh! My name is Moti.",
         "We’ll start by making a mission",
         "Think of a mission as a super important goal that you’d like to accomplish. It shouldn’t be too easy, but it shouldn’t be too challenging",
-        `So ${slots.user_name}, tell me what your mission is???`,
       ];
 
       texts.forEach((val) => {
@@ -145,6 +154,13 @@ exports.action = async (req, res, next) => {
       break;
 
     // SECTION: New mission form
+    case "action_ask_new_mission_form_mission":
+      text(`So ${slots.user_name}, tell me what your mission is!`);
+      custom({ component: "mission_form" });
+      send(resPayload);
+
+      break;
+
     case "action_save_mission":
       // TODO: Set "user.isNew" to false in database
 
@@ -177,36 +193,36 @@ exports.action = async (req, res, next) => {
 
     // SECTION: New goal form
 
-    case "validate_new_goal_form":
-      // if user is new, set goal type to task
-      // (Just to make things easier)
-      if (slots.user_is_new && !slots.goal) {
-        event("slot", "goal_type", "task");
-      }
-      // If the "time" slot is null, yet somehow goal_end has a value,
-      // remove the value in goal_end
-      // Solves problem which occurred in new user flow
-      if (!slots.time && slots.goal_end) {
-        event("slot", "goal_end", null);
-      }
+    // case "validate_new_goal_form":
+    //   // if user is new, set goal type to task
+    //   // (Just to make things easier)
+    //   if (slots.user_is_new && !slots.goal) {
+    //     event("slot", "goal_type", "task");
+    //   }
+    //   // If the "time" slot is null, yet somehow goal_end has a value,
+    //   // remove the value in goal_end
+    //   // Solves problem which occurred in new user flow
+    //   if (!slots.time && slots.goal_end) {
+    //     event("slot", "goal_end", null);
+    //   }
 
-      // if the extracted goal type text includes every,
-      // set "goal_type" to habit, otherwise task
-      //  TODO: Will fix this for more flexibility
-      if (slots.goal_type) {
-        if (
-          (slots.goal_type.includes("every") && !slots.goal_end) ||
-          slots.goal_type.includes("habit")
-        ) {
-          event("slot", "goal_type", "habit");
-        } else {
-          event("slot", "goal_type", "task");
-        }
-      }
+    //   // if the extracted goal type text includes every,
+    //   // set "goal_type" to habit, otherwise task
+    //   //  TODO: Will fix this for more flexibility
+    //   if (slots.goal_type) {
+    //     if (
+    //       (slots.goal_type.includes("every") && !slots.goal_end) ||
+    //       slots.goal_type.includes("habit")
+    //     ) {
+    //       event("slot", "goal_type", "habit");
+    //     } else {
+    //       event("slot", "goal_type", "task");
+    //     }
+    //   }
 
-      send(resPayload);
+    //   send(resPayload);
 
-      break;
+    //   break;
 
     case "action_ask_new_goal_form_goal":
       if (slots.user_is_new) {
@@ -218,16 +234,8 @@ exports.action = async (req, res, next) => {
         text("I like your thinking. What goal would you like to add?");
       }
 
-      send(resPayload);
-      break;
-
-    case "action_ask_new_goal_form_goal_end":
-      if (slots.goal_type === "habit") {
-        text("What time will you do it?");
-      } else {
-        text("When will you complete it?");
-      }
-
+      // sends goal form component
+      custom({ component: "goal_form" });
       send(resPayload);
       break;
 
@@ -246,14 +254,15 @@ exports.action = async (req, res, next) => {
         // creates goal
         const goal = await Goal.create({
           description: slots.goal,
-          dateEnd: slots.goal_type === "habit" ? null : slots.goal_end,
+          dateEnd:
+            slots.goal_type === "habit" ? mission.dateEnd : slots.actual_time,
           type: slots.goal_type,
-          timeRepeat: slots.goal_type === "habit" ? timeRepeat : null,
+          //   timeRepeat: slots.goal_type === "habit" ? timeRepeat : null,
           userId: slots.user_id,
           mission: mission._id,
         });
 
-        // if user was new, set user.new to false in database
+        // if user was new, set user.new to false in database and update slot
         if (slots.user_is_new) {
           await User.findByIdAndUpdate(slots.user_id, { new: false });
           event("slot", "user_is_new", false);
@@ -368,45 +377,6 @@ exports.action = async (req, res, next) => {
 
       // send payload
       send(resPayload);
-      break;
-
-    case "action_ask_create_goal_form_time":
-      const taskText = [
-        "What time should I remind you",
-        "When should I remind you?",
-      ];
-
-      const missionText = [
-        "That's great! What time will you do that by?",
-        "Sounds like a plan. When do you want to accomplish that?",
-      ];
-
-      const habitText = ["How often should I remind you?"];
-
-      // For loop used instead of if/else just in case more than one of these
-      // slots are filled
-      for (slot in slots) {
-        // if goal_task exists
-        if (slot === "goal_task" && slots.goal_task) {
-          // picks random task response
-          resPayload.responses.push({
-            text: randArrayElem(taskText),
-          });
-          break;
-        } else if (slot === "goal_mission" && slots.goal_mission) {
-          resPayload.responses.push({
-            text: randArrayElem(missionText),
-          });
-          break;
-        } else if (slot === "goal_habit" && slots.goal_habit) {
-          resPayload.responses.push({
-            text: randArrayElem(habitText),
-          });
-          break;
-        }
-      }
-      send(resPayload);
-
       break;
 
     case "action_get_time_from_text":

@@ -14,10 +14,10 @@ const goalSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  // not needed for habits
+  // for habits, this will be the end of mission
   dateEnd: {
     type: Date,
-    // required: [true, "Goal must have an end date"],
+    required: [true, "Goal must have an end date"],
   },
   description: {
     type: String,
@@ -28,9 +28,9 @@ const goalSchema = new mongoose.Schema({
     default: false,
   },
   // Repeats only for habits
-  timeRepeat: {
-    type: String,
-  },
+  // timeRepeat: {
+  //   type: String,
+  // },
   mission: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Mission",

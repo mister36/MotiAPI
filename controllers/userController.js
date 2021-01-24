@@ -20,7 +20,7 @@ exports.signUp = async (req, res, next) => {
       password,
     });
 
-    const data = { name, email, id: user._id, isNew: user.new };
+    const data = { name, email, id: user._id };
 
     // Creates tokens
     const accessToken = signToken(data, "5 days");
@@ -61,7 +61,7 @@ exports.login = async (req, res, next) => {
     if (!correctPassword) {
       throw new Error("Incorrect email or password");
     } else {
-      const data = { name: user.name, email, id: user._id, isNew: user.new };
+      const data = { name: user.name, email, id: user._id };
 
       // Creates tokens
       const accessToken = signToken(data, "5 days");
@@ -91,28 +91,32 @@ exports.login = async (req, res, next) => {
 exports.refreshToken = async (req, res, next) => {
   const { email, name, refreshToken } = req.body;
   try {
-    const token = await Token.findOne({ email });
+    const tokens = await Token.find({ email });
 
     // Error if no refresh token
-    if (!token) throw new Error("Token not valid");
+    if (tokens.length === 0) throw new Error("Token not valid");
 
-    // if token matches user data
-    if (token.email === email && token.token === refreshToken) {
-      const data = { name, email };
+    // checks each token in list
+    tokens.forEach(async (token, index) => {
+      if (token.email === email && token.token === refreshToken) {
+        const user = await User.findOne({ email });
 
-      // sign new access token for user, send
-      const newToken = signToken(data, "5 days");
+        const data = { name, email, id: user._id };
 
-      res.status(201).json({
-        token: newToken,
-      });
-    } else {
-      // else return error
-      res.status(400).json({
-        status: "fail",
-        message: "Invalid credentials",
-      });
-    }
+        // sign new access token for user, send
+        const newToken = signToken(data, "5 days");
+
+        return res.status(201).json({
+          token: newToken,
+        });
+      }
+    });
+
+    // if it hasn't returned already, invalid
+    res.status(400).json({
+      status: "fail",
+      message: "Invalid credentials",
+    });
   } catch (error) {
     console.log(error);
     res.status(400).json({
