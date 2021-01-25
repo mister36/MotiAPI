@@ -33,6 +33,13 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+userSchema.virtual("goals", {
+  ref: "User",
+  localField: "_id",
+  foreignField: "userId",
+  options: { sort: { dateEnd: 1 } }, // will sort goals from closest to farthes
+});
+
 // MIDDLEWARE
 // hashing password
 userSchema.pre("save", async function(next) {
