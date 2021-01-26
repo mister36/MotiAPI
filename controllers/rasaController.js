@@ -19,7 +19,7 @@ const Mood = motiConn.model("Mood", moodSchema);
 /**
  *Returns random item from array
  */
-const randArrayElem = (list = []) => {
+const randArrayElem = (list = [""]) => {
   return list[_.random(list.length - 1)];
 };
 
@@ -106,14 +106,26 @@ exports.action = async (req, res, next) => {
    * Sends text to Rasa
    */
   const text = (text) => {
-    resPayload.responses.push({ text });
+    if (Array.isArray(text)) {
+      text.forEach((val) => {
+        resPayload.responses.push({ text: val });
+      });
+    } else {
+      resPayload.responses.push({ text });
+    }
   };
 
   /**
    * Sends image to Rasa
    */
   const image = (url) => {
-    resPayload.responses.push({ image: url });
+    if (Array.isArray(url)) {
+      url.forEach((val) => {
+        resPayload.responses.push({ image: val });
+      });
+    } else {
+      resPayload.responses.push({ image: url });
+    }
   };
 
   /**
@@ -126,29 +138,28 @@ exports.action = async (req, res, next) => {
   switch (next_action) {
     // SECTION: New user
 
-    case "action_new_user_mission":
-      texts = [
-        "Welcome to Motisesh! My name is Moti.",
-        "We’ll start by making a mission",
-        "Think of a mission as a super important goal that you’d like to accomplish. It shouldn’t be too easy, but it shouldn’t be too challenging",
-      ];
+    // case "action_new_user_mission":
+    //   texts = [
+    //     "Welcome to Motisesh! My name is Moti.",
+    //     "We’ll start by making a mission",
+    //     "Think of a mission as a super important goal that you’d like to accomplish. It shouldn’t be too easy, but it shouldn’t be too challenging",
+    //   ];
 
-      texts.forEach((val) => {
-        text(val);
-      });
+    //   texts.forEach((val) => {
+    //     text(val);
+    //   });
 
-      send(resPayload);
-      break;
+    //   send(resPayload);
+    //   break;
 
     case "action_new_user_goal":
       texts = [
-        "A good way to keep track of your mission is by setting subgoals",
-        "That way, you know you’re getting closer to achieving it",
+        "Welcome to Motisesh! My name is Moti.",
+        "I’d like to know more about you",
+        // "So Adam, what’s one goal you want to accomplish?",
       ];
-      // TODO: Write function that adds all responses to resPayload(if needed)
-      texts.forEach((val) => {
-        text(val);
-      });
+
+      text(texts);
 
       send(resPayload);
       break;
@@ -227,9 +238,7 @@ exports.action = async (req, res, next) => {
     case "action_ask_new_goal_form_goal":
       if (slots.user_is_new) {
         // TODO: Have this response for creating a new mission as well
-        text(
-          "Now, what’s one thing you can do that will help you reach your mission?"
-        );
+        text("So Adam, what’s one goal you want to accomplish?");
       } else {
         text("I like your thinking. What goal would you like to add?");
       }
@@ -244,35 +253,26 @@ exports.action = async (req, res, next) => {
         DateTime.TIME_24_SIMPLE
       );
       try {
-        // TODO: optimize later
-        // mission id will be placed in goal for virtual populate
-        const mission = await Mission.findOne({
-          userId: slots.user_id,
-          completed: false,
-        });
-
         // creates goal
-        const goal = await Goal.create({
+        await Goal.create({
           description: slots.goal,
-          dateEnd:
-            slots.goal_type === "habit" ? mission.dateEnd : slots.actual_time,
+          dateEnd: slots.goal_type === "habit" ? null : slots.actual_time,
           type: slots.goal_type,
-          //   timeRepeat: slots.goal_type === "habit" ? timeRepeat : null,
           userId: slots.user_id,
-          mission: mission._id,
         });
 
         // if user was new, set user.new to false in database and update slot
         if (slots.user_is_new) {
           await User.findByIdAndUpdate(slots.user_id, { new: false });
           event("slot", "user_is_new", false);
+          text(`Awesome. This is just the beginning ${slots.user_name}!`);
+        } else {
+          text("Goal created. Check out the home page to see it!");
         }
 
-        text(`Do you feel that ${name}? You’re already one step closer.🔥`);
         event("slot", "goal", null);
         event("slot", "goal_end", null);
         event("slot", "goal_type", null);
-        console.log(goal);
       } catch (error) {
         console.log(error);
       } finally {
@@ -287,7 +287,6 @@ exports.action = async (req, res, next) => {
       event("slot", "time", null);
       event("slot", "word_time", null);
       event("slot", "actual_time", null);
-      event("slot", "mission_end", null);
       event("slot", "goal_end", null);
 
       send(resPayload);
@@ -320,6 +319,20 @@ exports.action = async (req, res, next) => {
       break;
 
     case "action_save_mood":
+      const posTexts = [
+        "That does sound nice. I’ll add that to your MotiMoods.",
+        `Good for you, ${slots.user_name}!`,
+        "When you feel good, I feel good😃",
+      ];
+
+      const negTexts = [
+        `Sorry you're not feeling so well ${slots.user_name}`,
+        "Wow that's not good🤔",
+      ];
+
+      const neuTexts = [
+        "In the meantime, check out any goals you have left, or make a new one",
+      ];
       sentiment = slots.sentiment_for_form;
 
       try {
@@ -334,38 +347,40 @@ exports.action = async (req, res, next) => {
       }
 
       if (sentiment > 0.05) {
-        text("That does sound nice. I’ll add that to your MotiMoods.");
+        text(randArrayElem(posTexts));
+      } else if (sentiment < 0.05) {
+        text(randArrayElem(negTexts));
+        event("followup", "improve_mood_form", undefined);
       } else {
-        event("followup", "action_improve_mood", undefined);
+        text(randArrayElem(neuTexts));
       }
 
       // Resets certain slots
       event("slot", "sentiment_for_form", null);
-      event("slot", "improve_mood_with", null);
       event("slot", "mood_reason", null);
 
       send(resPayload);
       break;
 
-    case "action_improve_mood":
-      // TODO: Add more ways to improve mood
-      // Sets the slot which tells how bot will try to cheer user up with
-      event("slot", "improve_mood_with", "fruit");
-      text(
-        "Eating fruit is a quick way to improve your mood. Got any of these?"
-      );
-      image(
-        "https://hos-kitchenwares.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/0/3/03030.00rd00001.jpg"
-      );
-      image(
-        "https://www.boeschbodenspies.com/wp-content/uploads/2017/08/orange.png"
-      );
-      image(
-        "https://toppng.com/uploads/preview/banana-1152834568854jqhpqhvq.png"
-      );
+    // case "action_improve_mood":
+    //   // TODO: Add more ways to improve mood
+    //   // Sets the slot which tells how bot will try to cheer user up with
+    //   event("slot", "improve_mood_with", "fruit");
+    //   text(
+    //     "Eating fruit is a quick way to improve your mood. Got any of these?"
+    //   );
+    //   image(
+    //     "https://hos-kitchenwares.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/0/3/03030.00rd00001.jpg"
+    //   );
+    //   image(
+    //     "https://www.boeschbodenspies.com/wp-content/uploads/2017/08/orange.png"
+    //   );
+    //   image(
+    //     "https://toppng.com/uploads/preview/banana-1152834568854jqhpqhvq.png"
+    //   );
 
-      send(resPayload);
-      break;
+    //   send(resPayload);
+    //   break;
 
     // SECTION: Quote
     case "action_grab_quote":
